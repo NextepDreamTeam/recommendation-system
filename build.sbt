@@ -10,6 +10,11 @@ libraryDependencies ++= Seq(
   jdbc,
   cache,
   ws,
+  "com.orientechnologies" % "orientdb-core" % "2.1.3",
+  "com.orientechnologies" % "orientdb-graphdb" % "2.1.3",
+  "com.orientechnologies" % "orientdb-client" % "2.1.3",
+  "com.tinkerpop.blueprints" % "blueprints-core" % "2.6.0",
+  "javax.persistence" % "persistence-api" % "1.0.2",
   specs2 % Test
 )
 
