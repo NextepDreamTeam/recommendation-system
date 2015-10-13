@@ -1,0 +1,60 @@
+@(message: String, requests: List[recommendationsystem.models.Request], count:Int, page:Int, pageLength:Int) 
+
+@import recommendationsystem.models._ 
+@import helper._
+
+@recommendationsystem.views.html.main("Inputs")(recommendationsystem.views.html.nav.navbar("inputs")) {
+<h1>Inputs</h1>
+<div class="row">
+	<!-- <div class="col-xs-12"></div> -->
+
+	<div class="col-xs-12">
+		<table class="table table-striped table-condensed">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>User id</th>
+					<th>Date</th>
+					<th>Tags</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for((request, i) <- requests.zipWithIndex){ 
+					@request.tags match {
+					    case Some(tags) => {
+					        @for((tag, j) <- tags.zipWithIndex){
+								<tr>
+								   @if(j < 1){ 
+				                        <td rowspan="@tags.size">@(count - (i + (page - 1) * pageLength))</td>
+				                        <!-- td rowspan="@tags.size">@request.id</td> -->
+	                                    <td rowspan="@tags.size">
+	                                       <a href="@recommendationsystem.controllers.manager.routes.UsersController.detail(request.user.id)">@request.user.id</a>
+	                                    </td>
+				                        <td rowspan="@tags.size">@("%1$td/%1$tm/%1$tY (%1$tH:%1$tM:%1$tS)".format(request.date))</td>
+			                        }  
+									<td>@tag.category :: @tag.attr</td>
+								</tr>
+							  }
+						}
+						case None => {
+						     <tr>
+	                                <td>@(count - (i + (page - 1) * pageLength))</td>
+                                    <td>
+                                       <a href="@recommendationsystem.controllers.manager.routes.UsersController.detail(request.user.id)">@request.user.id</a>
+                                    </td>
+	                                <td>@("%1$td/%1$tm/%1$tY (%1$tH:%1$tM:%1$tS)".format(request.date))</td>  
+	                                <td> - </td>
+	                            </tr>
+						}
+			     }
+			     } 
+
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="paginator">
+    @recommendationsystem.views.html.helper.paginator(page, pageLength, count, recommendationsystem.controllers.manager.routes.InputsController.list(_))
+</div>
+}
+

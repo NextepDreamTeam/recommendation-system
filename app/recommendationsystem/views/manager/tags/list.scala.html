@@ -1,0 +1,35 @@
+@(message: String, tags: List[recommendationsystem.models.Tag], count:Int, page:Int, pageLength:Int)
+
+@import models._ 
+@import helper._
+
+@recommendationsystem.views.html.main("Tags")(recommendationsystem.views.html.nav.navbar("tags")) {
+<h1>Tags</h1>
+<div class="row">
+
+    <div class="col-xs-12">
+       <table class="table table-striped table-condensed">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Tag</th>
+          </tr>
+        </thead>
+        <tbody>
+        @for((tag, i) <- tags.zipWithIndex){
+          <tr>
+              <td>@(i + (page - 1) * pageLength)</td>
+              <td>@tag.category :: @tag.attr</td>
+          </tr>
+        }
+
+        </tbody>
+      </table>
+    </div>
+</div>
+<div class="paginator">
+    @recommendationsystem.views.html.helper.paginator(page, pageLength, count, recommendationsystem.controllers.manager.routes.UsersController.list(_))
+</div>
+
+}
+

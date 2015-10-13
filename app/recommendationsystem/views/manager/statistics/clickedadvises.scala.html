@@ -1,0 +1,15 @@
+@(advices: List[recommendationsystem.models.Advice])
+
+@import helper._
+
+@recommendationsystem.views.html.main("ClickedAdvises")(recommendationsystem.views.html.nav.navbar("statistics")) {
+    @if(advices.nonEmpty) {
+        @recommendationsystem.views.html.manager.advices.list("Clicked Advices", "test", advices, advices.size, 1, 50)
+    } else {
+        <h1>Clicked Advices</h1>
+        <p>No one has clicked on an advice.</p>
+    }
+
+     <p><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.index()" >Clicca qui</a> per tornare alla pagina precedente.</p>
+
+}

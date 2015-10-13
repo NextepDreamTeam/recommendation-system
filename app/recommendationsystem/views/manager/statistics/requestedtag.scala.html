@@ -1,0 +1,61 @@
+@(requests: List[recommendationsystem.models.Request])
+
+@recommendationsystem.views.html.main("Requests in the range")(recommendationsystem.views.html.nav.navbar("statistics")) {
+    <div id="container">
+        <h1>Requests in the range</h1>
+        @if(requests.nonEmpty) {
+            <div class="col-xs-12">
+                <table class="table table-striped table-condensed">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User id</th>
+                            <th>Date</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for((request, i) <- requests.zipWithIndex){
+                        @request.tags match {
+                            case Some(tags) => {
+                                @for((tag, j) <- tags.zipWithIndex){
+                                    <tr>
+                                        @if(j < 1){
+                                            <td rowspan="@tags.size">@i</td>
+                                            <td rowspan="@tags.size">
+                                                <a href="@recommendationsystem.controllers.manager.routes.UsersController.detail(request.user.id)">@request.user.id</a>
+                                            </td>
+                                            <td rowspan="@tags.size">@("%1$td/%1$tm/%1$tY (%1$tH:%1$tM:%1$tS)".format(request.date))</td>
+                                        }
+                                    <td>@tag.category :: @tag.attr</td>
+                                    </tr>
+                                }
+                            }
+                            case None => {
+                                <tr>
+                                    <td>@i</td>
+                                    <td>
+                                        <a href="@recommendationsystem.controllers.manager.routes.UsersController.detail(request.user.id)">@request.user.id</a>
+                                    </td>
+                                    <td>@("%1$td/%1$tm/%1$tY (%1$tH:%1$tM:%1$tS)".format(request.date))</td>
+                                    <td> - </td>
+                                </tr>
+                            }
+                        }
+                    }
+
+                    </tbody>
+                </table>
+            </div>
+
+        } else {
+            <p>
+                No one Request match the range.
+            </p>
+            <p>
+                <a href="@recommendationsystem.controllers.manager.routes.StatisticsController.index()">Click here</a> to returns at the index.
+            </p>
+        }
+
+    </div>
+}

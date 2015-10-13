@@ -1,0 +1,34 @@
+@(advices: List[(String, Int)])
+
+@recommendationsystem.views.html.main("Top Advices")(recommendationsystem.views.html.nav.navbar("statistics")) {
+    <div id="container">
+        <h1>Top Advices</h1>
+        @if(advices.nonEmpty) {
+            <div class="row">
+                <div class="col-xs-12">
+                    <table class="table table-striped table-condensed">
+                        <thead>
+                            <tr>
+                                <td>Tag Name</td>
+                                <td>Number of occurrencies</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for(el <- advices) {
+                                <tr>
+                                    <td>@el._1</td>
+                                    <td>@el._2</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        } else {
+            <p>
+                No one results find in the range.
+            </p>
+        }
+    <p><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.index()">Click here </a> to come back on the index.</p>
+    </div>
+}

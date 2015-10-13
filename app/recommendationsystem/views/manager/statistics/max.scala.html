@@ -1,0 +1,22 @@
+@(max: Option[(String, Int)])
+
+@import util._
+
+@recommendationsystem.views.html.main("Max tag")(recommendationsystem.views.html.nav.navbar("statistics")) {
+    <h1>Most used tag</h1>
+    @max match {
+        case Some(x) => {
+            <p>
+                <ul>
+                    <li>Tag name: @x._1</li>
+                    <li>Occurrencies: @x._2</li>
+                </ul>
+            </p>
+        }
+        case None => {
+            <p>No one tag present.</p>
+        }
+    }
+
+    <p><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.index()">Clicca qui</a> per tornare alla pagina precedente.</p>
+}

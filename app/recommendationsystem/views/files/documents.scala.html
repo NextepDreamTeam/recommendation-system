@@ -1,0 +1,15 @@
+@(message: String) 
+
+@recommendationsystem.views.html.main("Documents")(recommendationsystem.views.html.nav.navbar("documents")) {
+<h1>Documents</h1>
+<div class="row">
+    <!--  <div class="col-xs-6 col-md-4"></div> -->
+
+    <div class="col-xs-12">
+        <dl>
+		  <dt>Documentation Dre.js</dt>
+		  <dd><a href="@recommendationsystem.controllers.routes.Assets.at("files/documentazione-dre.pdf")"> download </a></dd>
+		</dl>
+    </div>
+</div>
+}

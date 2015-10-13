@@ -1,0 +1,61 @@
+@(active: String)
+
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse"
+				data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span>
+				<span class="icon-bar"></span> <span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">DRE</a>
+		</div>
+	
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+			<!-- 
+				<li class="dropdown @{if(active == "users") "active"}">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Users <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a href="#">Add user</a></li>
+							<li><a href="@recommendationsystem.controllers.manager.routes.UsersController.list(1)">Show users</a></li>
+							<li class="divider"></li>
+							<li><a href="#">Separated link</a></li>
+						</ul>
+				</li>
+				<li class="dropdown @{if(active == "tags") "active"}"><a
+					href="#" class="dropdown-toggle" data-toggle="dropdown">Tags <b
+						class="caret"></b></a>
+					<ul class="dropdown-menu">
+						<li><a href="#">Add tag</a></li>
+						<li><a href="@recommendationsystem.controllers.manager.routes.TagsController.list(1)">Show tags</a></li>
+						<li class="divider"></li>
+						<li><a href="#">Separated link</a></li>
+
+					</ul>
+				</li>
+			-->
+				<li class="@{if(active == "users") "active"}"><a href="@recommendationsystem.controllers.manager.routes.UsersController.list(1)">Users</a></li>
+				<li class="@{if(active == "tags") "active"}"><a href="@recommendationsystem.controllers.manager.routes.TagsController.list(1)">Tags</a></li>
+				<li class="@{if(active == "advices") "active"}"><a href="@recommendationsystem.controllers.manager.routes.AdvicesController.list(1)">Advices</a></li>
+				<li class="@{if(active == "inputs") "active"}"><a href="@recommendationsystem.controllers.manager.routes.InputsController.list(1)">Inputs</a></li>
+                <li class="@{if(active == "correlations") "active"}"><a href="@recommendationsystem.controllers.manager.routes.CorrelationsController.list(1)">Correlations</a></li>
+                <li class="@{if(active == "statistics") "active"}"><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.index()">Statistics</a></li>
+			</ul>
+			
+			<ul class="nav navbar-nav navbar-right">
+		        <li class="dropdown @{if(active == "documents" || active == "plugins") "active"}">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Files <b class="caret"></b></a>
+		          <ul class="dropdown-menu">
+		            <li class="@{if(active == "documents") "active"}"><a href="@recommendationsystem.controllers.manager.routes.Manager.documents">Documents</a></li>
+		            <li class="@{if(active == "plugins") "active"}"><a href="@recommendationsystem.controllers.manager.routes.Manager.plugins">Plugins</a></li>
+		          </ul>
+		        </li>
+	        </ul>
+	
+		</div>
+		<!-- /.navbar-collapse -->
+	</div>
+</nav>

@@ -1,0 +1,55 @@
+@(message: String, user: recommendationsystem.models.User)
+
+@import recommendationsystem.models._
+
+@recommendationsystem.views.html.main("Users Detail")(recommendationsystem.views.html.nav.navbar("users")) {
+
+<div class="user-detail row">
+
+	<div class="col-xs-6">
+	    <div class="row col-xs-12">
+			<div class="user-info panel panel-default">
+			  <div class="panel-heading">
+			    <h3 class="panel-title">User info</h3>
+			  </div>
+			  <div class="panel-body">
+				  <ul class="list-group">
+				      <li class="list-group-item"><strong>Id</strong>@user.id</li>
+				      <li class="list-group-item"><strong>Email</strong>@user.email.getOrElse(" - ")</li>
+				  </ul>
+			  </div>
+			</div>
+		</div>
+		<div class="row col-xs-12">
+			<div class="user-anag panel panel-default">
+			  <div class="panel-heading">
+			    <h3 class="panel-title">User registry</h3>
+			  </div>
+			  <div class="panel-body">
+			     <ul class="list-group">
+                      <li class="list-group-item"><strong>First Name</strong></li>
+                      <li class="list-group-item"><strong>Last Name</strong></li>
+                  </ul>
+			  </div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="col-xs-6">
+		<div class="user-tags panel panel-default">
+		  <div class="panel-heading">
+		    <h3 class="panel-title">User's tags</h3>
+		  </div>
+		  <div class="panel-body">
+	           <ul class="list-group">
+	               @for((t, w, l) <- user.tags.getOrElse(List())) {
+                     <li class="list-group-item"><strong>@t.category : @t.attr</strong> @w @l </li>
+                    }
+                </ul>
+		  </div>
+		</div>
+	</div>
+
+</div>
+
+}

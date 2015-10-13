@@ -1,0 +1,14 @@
+@()
+
+@import helper._
+
+@recommendationsystem.views.html.main("Statistics")(recommendationsystem.views.html.nav.navbar("statistics")) {
+    <h1>Statistics</h1>
+    <ul class ="list-group">
+        <li><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.maxHtml()">Max used tag</a></li>
+        <li><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.clickedAdvicesHtml()">Clicked Advices</a></li>
+        <li><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.getCalculateStatisticsOnRangeForm">Clicked Advices in a range</a></li>
+        <li><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.showRequestForm">Requests in a range </a></li>
+        <li><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.showTopAdvicesForm()">Top Advices clicked in a range</a></li>
+    </ul>
+}

@@ -1,0 +1,38 @@
+@(message: String, correlations: List[recommendationsystem.models.Correlation], count:Int, page:Int, pageLength:Int)
+
+@import recommendationsystem.models._
+@import helper._
+
+@recommendationsystem.views.html.main("Correlations")(recommendationsystem.views.html.nav.navbar("correlations")) {
+    <h1>Correlations</h1>
+    <div class = "row">
+        <div class ="col-xs-12">
+            <table class="table table-striped table-condensed">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Category</th>
+                        <th>Product</th>
+                        <th>Average</th>
+                        <th>Weight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for((correlation, i) <- correlations.zipWithIndex) {
+                        <tr>
+                            <td>@(count - (i + (page - 1) * pageLength))</td>
+                            <td>@correlation.category</td>
+                            <td>@correlation.attribute</td>
+                            <td>@correlation.average</td>
+                            <td>@correlation.weight</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class ="pagination">
+        @recommendationsystem.views.html.helper.paginator(page, pageLength, count, recommendationsystem.controllers.manager.routes.CorrelationsController.list(_))
+    </div>
+}

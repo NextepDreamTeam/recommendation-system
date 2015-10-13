@@ -1,0 +1,15 @@
+@(message: String) 
+
+@recommendationsystem.views.html.main("Plugins")(recommendationsystem.views.html.nav.navbar("plugins")) {
+<h1>Plugins</h1>
+<div class="row">
+    <!--  <div class="col-xs-6 col-md-4"></div> -->
+
+    <div class="col-xs-12">
+        <dl>
+          <dt>Plugin Wordpress Admin Dre</dt>
+          <dd><a href="@recommendationsystem.controllers.routes.Assets.at("files/admin-dre.zip")"> download </a></dd>
+        </dl>
+    </div>
+</div>
+}

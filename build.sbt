@@ -1,4 +1,4 @@
-name := "play-scala"
+name := "recommendation-system"
 
 version := "1.0-SNAPSHOT"
 

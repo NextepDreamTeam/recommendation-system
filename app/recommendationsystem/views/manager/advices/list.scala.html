@@ -1,0 +1,50 @@
+@(title: String, message: String, advices: List[recommendationsystem.models.Advice], count:Int, page:Int, pageLength:Int)
+
+@import recommendationsystem.models._
+@import helper._ 
+
+@recommendationsystem.views.html.main("Advices")(recommendationsystem.views.html.nav.navbar("advices")) {
+<h1>@title</h1>
+<div class="row">
+    <!--  <div class="col-xs-6 col-md-4"></div> -->
+
+    <div class="col-xs-12">
+        <table class="table table-striped table-condensed">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Advise id</th>
+                    <th>User id</th>
+                    <th>Date</th>
+                    <th>clicked</th>
+                    <th>Tags</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(
+                    (advice, i) <- advices.zipWithIndex;
+                    (tag, j) <- advice.output.zipWithIndex
+                 ){ 
+                     <tr>
+                         @if(j < 1){ 
+	                         <td rowspan="@advice.output.size">@(count - (i + (page - 1) * pageLength))</td>
+	                         <td rowspan="@advice.output.size">@advice.id</td>
+                             <td rowspan="@advice.output.size">
+                                <a href="@recommendationsystem.controllers.manager.routes.UsersController.detail(advice.user.id)">@advice.user.id</a>
+                             </td>
+	                         <td rowspan="@advice.output.size">@("%1$td/%1$tm/%1$tY (%1$tH:%1$tM:%1$tS)".format(advice.date))</td>
+	                         <td rowspan="@advice.output.size">@advice.clicked</td>
+                         }
+                         <td>@tag._1.category :: @tag._1.attr | @tag._2</td>
+                     </tr>             
+                 } 
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="paginator">
+    @recommendationsystem.views.html.helper.paginator(page, pageLength, count, recommendationsystem.controllers.manager.routes.AdvicesController.list(_))
+</div>
+}
+

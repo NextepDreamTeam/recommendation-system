@@ -1,0 +1,19 @@
+@(average: Double, count: Int)(title: String)
+
+@import helper._
+
+@recommendationsystem.views.html.main(title)(recommendationsystem.views.html.nav.navbar("statistics")) {
+    <h1>@title</h1>
+    <div class = "row">
+
+    <h4>Results:</h4>
+        <ul>
+            <li>Average of clicked advices: @average</li>
+            <li>Number of clicked advices: @count</li>
+        </ul>
+    </div>
+    <p>
+       <a href ="@recommendationsystem.controllers.manager.routes.StatisticsController.getCalculateStatisticsOnRangeForm">Clicca qui</a> per cambiare il range.
+    </p>
+
+}

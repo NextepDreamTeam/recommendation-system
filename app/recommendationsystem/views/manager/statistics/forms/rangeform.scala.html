@@ -1,0 +1,41 @@
+@(rangeForm: Form[recommendationsystem.models.Range])(call: Call)
+
+@import helper._
+
+@recommendationsystem.views.html.main("Insert a range")(recommendationsystem.views.html.nav.navbar("statistics")) {
+    <div class="container">
+
+        @form(action=call) {
+            <fieldset class="scheduler-border">
+            <legend class="scheduler-border">Insert the range</legend>
+            <div class="row form-group">
+                <div class="col-xs-3">
+                    <label for="startDate">Start Date:</label>
+                </div>
+                <div class="col-xs-4">
+                    <input type="number" class="form-control" placeholder="Insert the start date..."
+                           name="startDate" value="@rangeForm("startDate")" required/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-xs-3">
+                    <label for="finishDate">Finish Date:</label>
+                </div>
+                <div class="col-xs-4">
+                    <input type="number" class="form-control" placeholder="Insert the finish date..."
+                           name="finishDate" value="@rangeForm("finishDate")" required/>
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Search</button>
+            </fieldset>
+        }
+        <br>
+        @if(rangeForm.hasGlobalErrors) {
+            @for(error <- rangeForm.globalErrors) {
+                <p class="alert alert-danger">@error.message</p>
+           }
+        }
+     <p><a href="@recommendationsystem.controllers.manager.routes.StatisticsController.index()">Click here</a> for return at the index page.</p>
+    </div>
+
+}
