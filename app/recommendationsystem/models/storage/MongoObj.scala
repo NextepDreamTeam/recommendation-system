@@ -1,4 +1,4 @@
-package recommendationsystem.models.storage
+/*package recommendationsystem.models.storage
 
 import scala.concurrent.{ ExecutionContext, Future }
 
@@ -107,14 +107,6 @@ trait MongoObj[T] {
    * Update an element to collection with parameter e, the element to update is selected by parameter query
    * Implicit T -> JsObject must be in scope
    */
-  def update(query: T, e: T, upsert: Boolean): Future[LastError] = {
-    collection.update(query, e, GetLastError(), upsert)
-  }
-
-  /**
-   * Update an element to collection with parameter e, the element to update is selected by parameter query
-   * Implicit T -> JsObject must be in scope
-   */
   def update(query: JsObject, e: T, upsert: Boolean = false): Future[LastError] = {
     collection.update(query, e, GetLastError(), upsert)
   }
@@ -143,3 +135,4 @@ trait MongoObj[T] {
   }
 
 }
+*/

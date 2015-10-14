@@ -1,4 +1,4 @@
-package recommendationsystem.models
+/*package recommendationsystem.models
 
 import play.modules.reactivemongo._
 import recommendationsystem._
@@ -110,3 +110,4 @@ object Users extends MongoObj[User] {
   //  }
 
 }
+*/

@@ -1,4 +1,4 @@
-package recommendationsystem.models
+/*package recommendationsystem.models
 
 import play.modules.reactivemongo._
 import recommendationsystem.models.storage.MongoObj
@@ -82,3 +82,4 @@ object Tags extends MongoObj[Tag] {
     */
   implicit val tagReader = Json.reads[RestTag]
  }
+*/

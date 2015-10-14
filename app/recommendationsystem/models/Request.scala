@@ -1,4 +1,4 @@
-package recommendationsystem.models
+/*package recommendationsystem.models
 
 import recommendationsystem.models.storage.MongoObj
 import recommendationsystem._
@@ -30,3 +30,4 @@ object Requests extends MongoObj[Request] {
   val collectionName = "requests"//"recommendation.requests"
   implicit val storageFormat = formatters.json.RequestFormatters.storageFormatter
 }
+*/

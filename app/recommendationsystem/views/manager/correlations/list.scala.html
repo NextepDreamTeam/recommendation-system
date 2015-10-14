@@ -1,3 +1,4 @@
+@*
 @(message: String, correlations: List[recommendationsystem.models.Correlation], count:Int, page:Int, pageLength:Int)
 
 @import recommendationsystem.models._
@@ -36,3 +37,4 @@
         @recommendationsystem.views.html.helper.paginator(page, pageLength, count, recommendationsystem.controllers.manager.routes.CorrelationsController.list(_))
     </div>
 }
+*@

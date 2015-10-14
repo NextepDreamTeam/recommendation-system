@@ -4,66 +4,66 @@
 
 # Home page
 
-POST           /advise                                 recommendationsystem.controllers.Application.advise
-OPTIONS        /advise                                 recommendationsystem.controllers.Application.checkPreAdvise
+#POST           /advise                                 recommendationsystem.controllers.Application.advise
+#OPTIONS        /advise                                 recommendationsystem.controllers.Application.checkPreAdvise
 
-GET            /correlation                            recommendationsystem.controllers.Application.correlation
+#GET            /correlation                            recommendationsystem.controllers.Application.correlation
 
-POST           /suggestion                             recommendationsystem.controllers.Application.suggestion
+#POST           /suggestion                             recommendationsystem.controllers.Application.suggestion
 
 # Users associated to some tags
 
-POST           /tag/users                              recommendationsystem.controllers.BridgeController.userMatchingTag
+#POST           /tag/users                              recommendationsystem.controllers.BridgeController.userMatchingTag
 
 # Insert on the DB
-POST           /tag/new                                recommendationsystem.controllers.BridgeController.addTag
-POST           /user/new                               recommendationsystem.controllers.BridgeController.addUser
-POST           /user/update                            recommendationsystem.controllers.BridgeController.addTagToUser
+#POST           /tag/new                                recommendationsystem.controllers.BridgeController.addTag
+#POST           /user/new                               recommendationsystem.controllers.BridgeController.addUser
+#POST           /user/update                            recommendationsystem.controllers.BridgeController.addTagToUser
 
 # Cookie matching
 
-GET            /synchCookie/:cookie                    recommendationsystem.controllers.CookieMatching.synchCookie(cookie, redirectTo)
+#GET            /synchCookie/:cookie                    recommendationsystem.controllers.CookieMatching.synchCookie(cookie, redirectTo)
 
 # Statistics
 
-GET            /statistics/index                       @recommendationsystem.controllers.manager.StatisticsController.index
-GET            /statistics/max                         @recommendationsystem.controllers.manager.StatisticsController.maxHtml
-GET            /statistics/max/json                    @recommendationsystem.controllers.manager.StatisticsController.maxJson
-GET            /statistics/clicked                     @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesHtml
-GET            /statistics/clicked/json                @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesJson
-GET            /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.getCalculateStatisticsOnRangeForm
-POST           /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.calculateGoodAdvicesHtml
-POST           /statistics/good/json                   @recommendationsystem.controllers.manager.StatisticsController.calculateGoodAdvicesJson
-POST           /statistics/tags/requests/json          @recommendationsystem.controllers.manager.StatisticsController.searchTopRequestedTagsJson
-GET            /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.showRequestForm
-POST           /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.searchTopRequestTagsValidateForm
-GET            /statistics/tags/requests/:s/:f         @recommendationsystem.controllers.manager.StatisticsController.displayTopRequestResult(s: Long, f: Long)
-GET            /statistics/:average/:count             @recommendationsystem.controllers.manager.StatisticsController.displayStatistics(average: Double, count: Int)
-POST           /statistics/tags/advices/json           @recommendationsystem.controllers.manager.StatisticsController.topAdvicesJson
-GET            /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesForm
-POST           /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesValidateForm
-GET            /statistics/tags/advices/:s/:f          @recommendationsystem.controllers.manager.StatisticsController.displayTopAdvicesResults(s: Long, f: Long)
-GET            /statistics/tag                         @recommendationsystem.controllers.manager.StatisticsController.userTag
+#GET            /statistics/index                       @recommendationsystem.controllers.manager.StatisticsController.index
+#GET            /statistics/max                         @recommendationsystem.controllers.manager.StatisticsController.maxHtml
+#GET            /statistics/max/json                    @recommendationsystem.controllers.manager.StatisticsController.maxJson
+#GET            /statistics/clicked                     @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesHtml
+#GET            /statistics/clicked/json                @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesJson
+#GET            /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.getCalculateStatisticsOnRangeForm
+#POST           /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.calculateGoodAdvicesHtml
+#POST           /statistics/good/json                   @recommendationsystem.controllers.manager.StatisticsController.calculateGoodAdvicesJson
+#POST           /statistics/tags/requests/json          @recommendationsystem.controllers.manager.StatisticsController.searchTopRequestedTagsJson
+#GET            /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.showRequestForm
+#POST           /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.searchTopRequestTagsValidateForm
+#GET            /statistics/tags/requests/:s/:f         @recommendationsystem.controllers.manager.StatisticsController.displayTopRequestResult(s: Long, f: Long)
+#GET            /statistics/:average/:count             @recommendationsystem.controllers.manager.StatisticsController.displayStatistics(average: Double, count: Int)
+#POST           /statistics/tags/advices/json           @recommendationsystem.controllers.manager.StatisticsController.topAdvicesJson
+#GET            /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesForm
+#POST           /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesValidateForm
+#GET            /statistics/tags/advices/:s/:f          @recommendationsystem.controllers.manager.StatisticsController.displayTopAdvicesResults(s: Long, f: Long)
+#GET            /statistics/tag                         @recommendationsystem.controllers.manager.StatisticsController.userTag
 
 
 # Management
 
-GET            /                                       @recommendationsystem.controllers.manager.UsersController.list(page: Int = 1)
-GET            /users                                  @recommendationsystem.controllers.manager.UsersController.list(page: Int = 1)
-GET            /users/$page<[1-9][0-9]*>               @recommendationsystem.controllers.manager.UsersController.list(page: Int)
-GET            /users/detail/:id                       @recommendationsystem.controllers.manager.UsersController.detail(id: String)
-GET            /inputs                                 @recommendationsystem.controllers.manager.InputsController.list(page: Int = 1)
-GET            /inputs/$page<[1-9][0-9]*>              @recommendationsystem.controllers.manager.InputsController.list(page: Int)
-GET            /advices                                @recommendationsystem.controllers.manager.AdvicesController.list(page: Int = 1)
-GET            /advices/$page<[1-9][0-9]*>             @recommendationsystem.controllers.manager.AdvicesController.list(page: Int)
-GET            /tags                                   @recommendationsystem.controllers.manager.TagsController.list(page: Int = 1)
-GET            /tags/$page<[1-9][0-9]*>                @recommendationsystem.controllers.manager.TagsController.list(page: Int)
-GET            /correlations                           @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int = 1)
-GET            /correlations/$page<[1-9][0-9]*>        @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int)
-GET            /files/documents                        @recommendationsystem.controllers.manager.Manager.documents
-GET            /files/plugins                          @recommendationsystem.controllers.manager.Manager.plugins
-GET            /pearson                                @recommendationsystem.controllers.manager.Manager.startPearson
+#GET            /                                       @recommendationsystem.controllers.manager.UsersController.list(page: Int = 1)
+#GET            /users                                  @recommendationsystem.controllers.manager.UsersController.list(page: Int = 1)
+#GET            /users/$page<[1-9][0-9]*>               @recommendationsystem.controllers.manager.UsersController.list(page: Int)
+#GET            /users/detail/:id                       @recommendationsystem.controllers.manager.UsersController.detail(id: String)
+#GET            /inputs                                 @recommendationsystem.controllers.manager.InputsController.list(page: Int = 1)
+#GET            /inputs/$page<[1-9][0-9]*>              @recommendationsystem.controllers.manager.InputsController.list(page: Int)
+#GET            /advices                                @recommendationsystem.controllers.manager.AdvicesController.list(page: Int = 1)
+#GET            /advices/$page<[1-9][0-9]*>             @recommendationsystem.controllers.manager.AdvicesController.list(page: Int)
+#GET            /tags                                   @recommendationsystem.controllers.manager.TagsController.list(page: Int = 1)
+#GET            /tags/$page<[1-9][0-9]*>                @recommendationsystem.controllers.manager.TagsController.list(page: Int)
+#GET            /correlations                           @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int = 1)
+#GET            /correlations/$page<[1-9][0-9]*>        @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int)
+#GET            /files/documents                        @recommendationsystem.controllers.manager.Manager.documents
+#GET            /files/plugins                          @recommendationsystem.controllers.manager.Manager.plugins
+#GET            /pearson                                @recommendationsystem.controllers.manager.Manager.startPearson
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET            /assets/*file                           recommendationsystem.controllers.Assets.at(path="/public/recommendationsysem", file)
+#GET            /assets/*file                           recommendationsystem.controllers.Assets.at(path="/public/recommendationsysem", file)

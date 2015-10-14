@@ -1,4 +1,4 @@
-package recommendationsystem.controllers.manager
+/*package recommendationsystem.controllers.manager
 
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
@@ -27,3 +27,4 @@ class CorrelationsController extends Controller {
   }
 
   }
+*/

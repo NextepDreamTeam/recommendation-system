@@ -1,4 +1,5 @@
-@(message: String, requests: List[recommendationsystem.models.Request], count:Int, page:Int, pageLength:Int) 
+@*
+@(message: String, requests: List[recommendationsystem.models.Request], count:Int, page:Int, pageLength:Int)
 
 @import recommendationsystem.models._ 
 @import helper._
@@ -57,4 +58,5 @@
     @recommendationsystem.views.html.helper.paginator(page, pageLength, count, recommendationsystem.controllers.manager.routes.InputsController.list(_))
 </div>
 }
+*@
 

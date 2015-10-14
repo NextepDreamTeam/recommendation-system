@@ -1,4 +1,4 @@
-package recommendationsystem.models
+/*package recommendationsystem.models
 
 import play.modules.reactivemongo._
 import play.api.libs.functional._
@@ -41,3 +41,4 @@ object Advices extends MongoObj[Advice] {
   val collectionName = "advices"//"recommendation.advices"
   implicit val storageFormat = formatters.json.AdviceFormatters.storageFormatter
 }
+*/

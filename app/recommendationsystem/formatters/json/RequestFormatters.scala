@@ -1,4 +1,4 @@
-package recommendationsystem.formatters.json
+/*package recommendationsystem.formatters.json
 
 import play.api.libs.json._
 
@@ -19,3 +19,4 @@ object RequestFormatters {
   implicit val storageFormatter = Json.format[Request]
 
 }
+*/

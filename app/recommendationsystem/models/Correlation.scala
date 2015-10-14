@@ -1,4 +1,4 @@
-package recommendationsystem.models
+/*package recommendationsystem.models
 
 import play.modules.reactivemongo._
 import recommendationsystem._
@@ -46,3 +46,4 @@ object Correlations extends MongoObj[Correlation] {
    */
   implicit val storageFormat = formatters.json.CorrelationFormatters.storageFormatter
 }
+*/

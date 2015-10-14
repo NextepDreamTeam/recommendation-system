@@ -1,4 +1,4 @@
-package recommendationsystem.controllers.manager
+/*package recommendationsystem.controllers.manager
 
 import play.api.libs.json
 import play.api.libs.json._
@@ -406,3 +406,4 @@ class StatisticsController extends Controller{
   }
 
 }
+*/

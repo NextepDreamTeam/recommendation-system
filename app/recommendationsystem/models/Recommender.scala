@@ -1,4 +1,4 @@
-package recommendationsystem.models
+/*package recommendationsystem.models
 
 import scala.concurrent.Future
 import play.api.libs.json.Json
@@ -226,5 +226,4 @@ class TagActor extends Actor with akka.actor.ActorLogging {
       }
   }
 }
-
-
+*/

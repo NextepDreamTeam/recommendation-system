@@ -1,4 +1,4 @@
-package recommendationsystem.controllers.manager
+/*package recommendationsystem.controllers.manager
 
 //import recommendationsystem.controllers.manager.routes;
 import play.api._
@@ -40,3 +40,4 @@ class UsersController extends Controller {
   }
 
 }
+*/

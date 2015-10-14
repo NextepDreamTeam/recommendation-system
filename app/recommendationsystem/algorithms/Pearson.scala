@@ -1,4 +1,4 @@
-package recommendationsystem.algorithms
+/*package recommendationsystem.algorithms
 
 import akka.actor.Actor
 import akka.actor.Props
@@ -13,8 +13,8 @@ import play.api.libs.iteratee._
 import scala.collection.mutable.HashMap
 import play.api.libs.concurrent.Execution.Implicits._
 import recommendationsystem.models.storage.MongoObj
-import play.modules.reactivemongo.json.collection.JSONCollection
-import reactivemongo.core.commands._
+//import play.modules.reactivemongo.json.collection.JSONCollection
+//import reactivemongo.core.commands._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import scala.util._
@@ -29,10 +29,13 @@ object TagSum {
     (__ \ "value" \ "sumQ").format[Double])(TagSum.apply, unlift(TagSum.unapply))
 }
 
+/*
+probabilmente veniva utilizzato per salvare nel db delle info dell'algoritmo
 object TagsSums extends MongoObj[TagSum] {
   val collectionName = "tagsSums"//"recommendation.tagsSums"
   implicit val storageFormat = TagSum.TagSumFormat
 }
+*/
 
 case class TagsMatch(_id: String, tag1: String, tag2: String, sum1: Double, sum2: Double, sumQ1: Double, sumQ2: Double, sumProd: Double, count: Int)
 object TagsMatch {
@@ -196,8 +199,8 @@ object Pearson {
    * @return a future json result
    */
   def mapReduce(inCollection: String, mapFunction: String, reduceFunction: String, outCollection: String): Future[JsValue] = {
-    import reactivemongo.core.commands._
-    import reactivemongo.bson._
+    //import reactivemongo.core.commands._
+    //import reactivemongo.bson._
 
     val output = Promise[JsValue]()
     val mapReduceCommand = BSONDocument(
@@ -342,3 +345,4 @@ object Pearson {
 }
   
 }
+*/

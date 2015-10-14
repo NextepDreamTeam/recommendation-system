@@ -1,4 +1,4 @@
-package recommendationsystem.utils
+/*package recommendationsystem.utils
 
 import play.api.mvc._
 import play.api.http.HeaderNames._
@@ -31,3 +31,4 @@ object CorsAction extends ActionBuilder[Request] {
   
   override def composeAction[A](action: Action[A]) = this.withCors(action)
 }
+*/

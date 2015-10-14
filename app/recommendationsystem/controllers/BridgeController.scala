@@ -1,4 +1,4 @@
-package recommendationsystem.controllers
+/*package recommendationsystem.controllers
 
 import play.api._
 import play.api.mvc._
@@ -208,3 +208,4 @@ object BridgeController extends Controller {
    }
    
 }
+*/

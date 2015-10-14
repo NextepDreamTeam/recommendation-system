@@ -1,4 +1,4 @@
-package recommendationsystem.controllers.manager
+/*package recommendationsystem.controllers.manager
 
 import play.api._
 import play.api.mvc._
@@ -25,3 +25,4 @@ class Manager extends Controller{
 	  Future {Ok(recommendationsystem.views.html.files.plugins("plugins"))}
 	}
 }
+*/
