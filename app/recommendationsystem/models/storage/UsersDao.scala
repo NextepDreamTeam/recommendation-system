@@ -11,9 +11,9 @@ import scala.concurrent.Future
 trait UsersDao {
   def count: Future[Long]
 
-  def save(e: User, upsert: Boolean = false): Future[Boolean]
+  //def save(e: User, upsert: Boolean = false): Future[Boolean]
 
-  def remove(e: User): Future[Boolean]
+  //def remove(e: User): Future[Boolean]
 
 }
 
@@ -26,7 +26,7 @@ object UsersOdb extends UsersDao{
     Future {count}
   }
 
-  override  def save(e: User): Future[Boolean]={
+  /*override  def save(e: User): Future[Boolean]={
     val graph = Odb.factory.getNoTx
     val v = graph.addVertex("Users",12)
     v.setProperty("id", e.id)
@@ -34,14 +34,14 @@ object UsersOdb extends UsersDao{
     graph.commit()
     graph.shutdown()
     Future{true}
-  }
+  }*/
 
-  override  def remove(e : User,): Future[Boolean]={
+  /*override  def remove(e : User): Future[Boolean]={
     val graph = Odb.factory.getTx
     graph.removeVertex(e.id)
     graph.shutdown()
     Future{true}
-  }
+  }*/
 
 
 }

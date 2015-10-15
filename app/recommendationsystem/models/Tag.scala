@@ -12,9 +12,10 @@ import play.api.libs.iteratee.Enumerator
  */
 
 case class Tag(
-  category: String,
-  attr: String,
-  equalsTo: Option[List[(Tag, Double)]] = None) {
+                category: String,
+                attr: String,
+                equalsTo: Option[List[(Tag, Double)]] = None,
+                var rid: String = null) {
 
   lazy val id = (category + ":" + attr).foldLeft("")((acc, c) => acc + c.toInt)
   lazy val flatten = category + ":" + attr
@@ -48,6 +49,7 @@ object Tag {
   //implicit val tagFormatter = formatters.json.TagFormatters.storageFormatter
 
 }
+
 /*
 object Tags extends MongoObj[Tag] {
   val collectionName = "tags"//"recommendation.tags"
