@@ -27,10 +27,10 @@ case class Tag(
 }
 
 object Tag {
-  def apply(tag: String, eqTo: Option[List[(Tag, Double)]]) = {
+  def apply(tag: String, eqTo: Option[List[(Tag, Double)]], rid: String) = {
     val splitted = tag.split(":+").toList
     splitted match {
-      case x :: y :: Nil => new Tag(splitted(0), splitted(1), eqTo)
+      case x :: y :: Nil => new Tag(splitted(0), splitted(1), eqTo, rid)
       case _ => throw new Exception("Tag.apply() - No valid tag")
     }
     //new Tag(splitted(0), splitted(1), eqTo)

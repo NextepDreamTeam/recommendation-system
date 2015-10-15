@@ -40,7 +40,7 @@ class TagsOdb$Test extends org.scalatest.FunSuite {
     val tlst = t1 :: t2 :: t3 :: List()
     tlst map ( x => TagsOdb.save(x) ) map (
       t => t onComplete {
-        case Success(r) => assert(true)
+        case Success(r) => assert(r)
         case Failure(t) => println("An error has occured: " + t.getMessage)
       }
       )
@@ -50,12 +50,43 @@ class TagsOdb$Test extends org.scalatest.FunSuite {
     }
     tlst map ( x => TagsOdb.remove(x) ) map (
       t => t onComplete {
-        case Success(r) => assert(true)
+        case Success(r) => assert(r)
         case Failure(t) => println("An error has occured: " + t.getMessage)
       }
       )
     assert(true)
   }
 
+  test("TagsOdb.update is invoked") {
+    val ot = Tag("sette","sette")
+    TagsOdb.save(ot) onComplete {
+      case Success(r) => assert(r)
+      case Failure(t) => println("An error has occured: " + t.getMessage)
+    }
+    val nt = Tag(ot.attr,"te")
+    TagsOdb.update(nt,ot) onComplete {
+      case Success(r) => assert(r)
+      case Failure(t) => println("An error has occured: " + t.getMessage)
+    }
+    TagsOdb.remove(nt) onComplete {
+      case Success(b) => assert(b)
+      case Failure(t) => println("An error has occured: " + t.getMessage)
+    }
+  }
+
+  test("TagsOdb.find is invoked") {
+    TagsOdb.save(t) onComplete {
+      case Success(r) => assert(r)
+      case Failure(t) => println("An error has occured: " + t.getMessage)
+    }
+    TagsOdb.find(t.flatten) onComplete {
+      case Success(l) => assert(l.size == 1); assert(l.head.equals(t))
+      case Failure(t) => println("An error has occured: " + t.getMessage)
+    }
+    TagsOdb.remove(t) onComplete {
+      case Success(b) => assert(b)
+      case Failure(t) => println("An error has occured: " + t.getMessage)
+    }
+  }
 
 }
