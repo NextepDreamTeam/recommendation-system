@@ -1,12 +1,8 @@
-/*package recommendationsystem.models
+package recommendationsystem.models
 
-import play.modules.reactivemongo._
-import recommendationsystem._
-import recommendationsystem.models.storage.MongoObj
-import play.api.libs.functional._
+//import play.modules.reactivemongo._
+//import recommendationsystem.models.storage.MongoObj
 import play.api.libs.json._
-
-import scala.concurrent.Future
 
 case class Anag(
   name: String,
@@ -69,7 +65,7 @@ case class User(
 
 
 }
-
+/*
 /** Companion object for class User */
 object User {
 
@@ -82,9 +78,9 @@ object User {
 
 }
 
-/**
+
  * Companion object for manage class User, contains utility method and databases access method
- */
+
 object Users extends MongoObj[User] {
 
   /** Collection name of mongodb */
@@ -110,4 +106,6 @@ object Users extends MongoObj[User] {
   //  }
 
 }
-*/
+ */
+
+
