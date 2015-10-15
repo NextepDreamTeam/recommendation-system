@@ -1,14 +1,8 @@
-/*package recommendationsystem.models
+package recommendationsystem.models
 
-import play.modules.reactivemongo._
-import recommendationsystem.models.storage.MongoObj
 import recommendationsystem._
-//Import for object Tags
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
-import play.modules.reactivemongo._
-import play.modules.reactivemongo.json.collection.JSONCollection
-import play.modules.reactivemongo.ReactiveMongoPlugin
 import play.api.Play.current
 import play.api.libs.json.Json
 import play.api.libs.iteratee.Enumerator
@@ -50,10 +44,11 @@ object Tag {
     //    Some(a)
   }
 
-  implicit val tagFormatter = formatters.json.TagFormatters.storageFormatter
+  //da eliminare
+  //implicit val tagFormatter = formatters.json.TagFormatters.storageFormatter
 
 }
-
+/*
 object Tags extends MongoObj[Tag] {
   val collectionName = "tags"//"recommendation.tags"
 
