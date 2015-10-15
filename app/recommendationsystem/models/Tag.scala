@@ -1,11 +1,10 @@
 package recommendationsystem.models
 
-import recommendationsystem._
+import recommendationsystem.models.storage.TagsOdb
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import play.api.Play.current
 import play.api.libs.json.Json
-import play.api.libs.iteratee.Enumerator
 
 /**
  *
@@ -50,33 +49,38 @@ object Tag {
 
 }
 
-/*
-object Tags extends MongoObj[Tag] {
-  val collectionName = "tags"//"recommendation.tags"
 
-  implicit val storageFormat = formatters.json.TagFormatters.storageFormatter
-  //  implicit def ec: ExecutionContext = ExecutionContext.Implicits.global
-  //
-  //  implicit /*lazy val*/def db = ReactiveMongoPlugin.db
-  //
-  //  def collection: JSONCollection = db.collection[JSONCollection]("tags")
+object Tags {
+
+  def count: Future[Long] = TagsOdb.count
+
+  def save(e: Tag, upsert: Boolean = false): Future[Boolean] = TagsOdb save(e,upsert)
+
+  def update(newTag: Tag, oldTag: Tag): Future[Boolean] = TagsOdb update(newTag,oldTag)
+
+  def remove(e: Tag): Future[Boolean] = TagsOdb remove e
+
+  def all: Future[List[Tag]] = TagsOdb all
+
+  def find(id: String): Future[List[Tag]] = TagsOdb find id
 
 }
+
 /**
  * Class that represents a tag in a REST request.
  * @constructor Construct a RestTag object.
  * @param tag - the tag String.
  * @author Alberto Adami
  */
- case class RestTag(tag: String)
- /**
-  * Object that represents the formatter for a RestTag object.
-  * @author Alberto Adami
-  */
- object RestTag {
-   /**
-    * The converter from a JsValue to a RestTag object.
-    */
+case class RestTag(tag: String)
+
+/**
+ * Object that represents the formatter for a RestTag object.
+ * @author Alberto Adami
+ */
+object RestTag {
+  /**
+   * The converter from a JsValue to a RestTag object.
+   */
   implicit val tagReader = Json.reads[RestTag]
- }
-*/
+}
