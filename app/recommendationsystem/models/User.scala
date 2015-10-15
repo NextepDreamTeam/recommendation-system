@@ -2,11 +2,12 @@ package recommendationsystem.models
 
 //import play.modules.reactivemongo._
 //import recommendationsystem.models.storage.MongoObj
+
 import play.api.libs.json._
 
 case class Anag(
-  name: String,
-  lastName: String)
+                 name: String,
+                 lastName: String)
 
 object Anag {
   implicit val anagFormat = Json.format[Anag]
@@ -19,12 +20,14 @@ object Anag {
  * @param email
  * @param anag
  * @param tags
+ * @param rid
  */
 case class User(
-  id: String,
-  email: Option[String] = None,
-  anag: Option[Anag] = None,
-  tags: Option[List[(Tag, Double, Long)]] = None) {
+                 id: String,
+                 email: Option[String] = None,
+                 anag: Option[Anag] = None,
+                 tags: Option[List[(Tag, Double, Long)]] = None,
+                 var rid: String = null) {
 
   /**
    * Update the weight of tag, this means that user 'like' _tags
@@ -50,9 +53,9 @@ case class User(
     copy(tags = Some(updatedTags))
   }
 
-  def merge(that: User) = {
+  /*def merge(that: User) = {
     that match {
-      case User(id, None, None, tags) =>
+      case User(id, None, None, tags, rid) =>
         copy(tags = tags)
       case User(id, email, None, tags) =>
         copy(email = email, tags = tags)
@@ -61,10 +64,10 @@ case class User(
       case User(id, email, anag, tags) =>
         copy(anag = anag, email = email, tags = tags)
     }
-  }
-
+  }*/
 
 }
+
 /*
 /** Companion object for class User */
 object User {
