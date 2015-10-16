@@ -51,7 +51,7 @@ object Tag {
 
 object Tags {
 
-  def count: Future[Long] = TagsOdb.count
+  def count: Future[Long] = Tags.count
 
   def save(e: Tag, upsert: Boolean = false): Future[Boolean] = TagsOdb save(e,upsert)
 

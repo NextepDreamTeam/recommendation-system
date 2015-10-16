@@ -20,15 +20,12 @@ object Anag {
  * @param email
  * @param anag
  * @param tags
- * @param rid
  */
 case class User(
                  id: String,
                  email: Option[String] = None,
                  anag: Option[Anag] = None,
-                 tags: Option[List[(Tag, Double, Long)]] = None,
-                 var rid: String = null) {
-
+                 tags: Option[List[(Tag, Double, Long)]] = None) {
   /**
    * Update the weight of tag, this means that user 'like' _tags
    * @param newTags tags that user likes with value of 'like'
@@ -53,9 +50,9 @@ case class User(
     copy(tags = Some(updatedTags))
   }
 
-  /*def merge(that: User) = {
+  def merge(that: User) = {
     that match {
-      case User(id, None, None, tags, rid) =>
+      case User(id, None, None, tags) =>
         copy(tags = tags)
       case User(id, email, None, tags) =>
         copy(email = email, tags = tags)
@@ -64,15 +61,15 @@ case class User(
       case User(id, email, anag, tags) =>
         copy(anag = anag, email = email, tags = tags)
     }
-  }*/
+  }
 
 }
 
-/*
+
 /** Companion object for class User */
 object User {
 
-  implicit val userFormat: Format[User] = formatters.json.UserFormatters.storageFormatter
+  //implicit val userFormat: Format[User] = formatters.json.UserFormatters.storageFormatter
 
   def applyWithToken(id: String, _email: Option[String] = None, token: Option[String], anag: Option[Anag] = None, tags: Option[List[(Tag, Double, Long)]] = None) = {
     val email = _email.orElse(token)
@@ -80,7 +77,7 @@ object User {
   }
 
 }
-
+/*
 
  * Companion object for manage class User, contains utility method and databases access method
 

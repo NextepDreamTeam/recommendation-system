@@ -24,48 +24,83 @@ trait UsersDao {
 
 }
 
-object UsersOdb extends UsersDao{
+object UsersOdb extends UsersDao {
 
   override def count: Future[Long] = {
     val graph = Odb.factory.getTx
     val count = graph.countVertices("Users")
     graph.shutdown()
-    Future {count}
+    Future {
+      count
+    }
   }
 
-  override  def save(e: User, upsert: Boolean): Future[Boolean]={
+  override def save(e: User, upsert: Boolean): Future[Boolean] = {
     val graph = Odb.factory.getTx
     val v = graph.addVertex("Users", null)
     v.setProperty("uid", e.id)
-    v.setProperty("email", e.email)
+    e.email match {
+      case Some(mail) => v.setProperty("email", e.email)
+    }
+    graph.commit()
+    //Inserting edges in HoldsTag
+    e.tags match {
+      case Some(tagList) => {
+        //tags must be present in database; creating edges from User to Tag
+        tagList map
+          (t => {
+            val tagVertex = graph.getVertices("Tags.tag", t._1.flatten).asScala.head
+            val userHoldsTagEdge = graph.addEdge(null,v,tagVertex,"HoldsTag")
+            userHoldsTagEdge.setProperty("weight",t._2)
+            userHoldsTagEdge.setProperty("lastInsert",t._3)
+          })
+      }
+    }
     graph.commit()
     graph.shutdown()
-    Future{true}
+    Future {
+      true
+    }
   }
 
-  override  def remove(e : User): Future[Boolean]={
+  override def remove(e: User): Future[Boolean] = {
     val graph = Odb.factory.getTx
-    val vert : Iterable[Vertex] = graph.getVertices("Users.uid", e.id).asScala
+    val userVertex = graph.getVertices("Users.uid", e.id).asScala.head
     graph.commit()
-    for(v <- vert) graph.removeVertex(v)
+    val holdsTagEdges = userVertex.getEdges(Direction.OUT,"HoldsTag").asScala
+    holdsTagEdges map (holdsTagEdge => holdsTagEdge.remove)
+    graph.removeVertex(userVertex)
     graph.commit()
     graph.shutdown()
-    Future{true}
+    Future {true}
   }
 
   override def all: Future[List[User]] = {
-    val graph = Odb.factory.getTx
-    val vList: Iterable[Vertex] = graph.getVerticesOfClass("Users").asScala
-    graph.commit;
-    val list = vList map (v=> User(v.getProperty("uid"))) toList;
+    val graph = Odb.factory.getNoTx
+    val usersListVertex = graph.getVerticesOfClass("Users").asScala.toList
+    val usersList: List[User] = usersListVertex map (userVertex => {
+      val userTagsEdge = userVertex.getEdges(Direction.OUT,"HoldsTag").asScala
+      val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.OUT))
+      val tagList = userTagsEdge zip userTagsVertex map
+        (x => (x._2.getProperty("tag"),x._1.getProperty("weight"),x._1.getProperty("lastInsert"))) toList;
+      User(userVertex.getProperty("uid"),Option(userVertex.getProperty("email")),None,Option(tagList))
+    })
     graph.shutdown
-    Future{list}
+    Future {usersList}
   }
 
-  override  def find(id: String) : Future[List[User]] = {
+  override def find(id: String): Future[List[User]] = {
     val graph = Odb.factory.getTx
-    val uList = graph.getVerticesOfClass("Users").asScala
-    Future {uList map( v => User(v.getProperty("uid"))) toList}
+    val usersListVertex = graph.getVerticesOfClass("Users").asScala.toList
+    val usersList: List[User] = usersListVertex map (userVertex => {
+      val userTagsEdge = userVertex.getEdges(Direction.OUT,"HoldsTag").asScala
+      val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.OUT))
+      val tagList = userTagsEdge zip userTagsVertex map
+        (x => (x._2.getProperty("tag"),x._1.getProperty("weight"),x._1.getProperty("lastInsert"))) toList;
+      User(userVertex.getProperty("uid"),Option(userVertex.getProperty("email")),None,Option(tagList))
+    })
+    graph.shutdown
+    Future {usersList}
   }
 
 }
