@@ -13,8 +13,7 @@ import play.api.libs.json.Json
 case class Tag(
                 category: String,
                 attr: String,
-                equalsTo: Option[List[(Tag, Double)]] = None,
-                var rid: String = null) {
+                equalsTo: Option[List[(Tag, Double)]] = None) {
 
   lazy val id = (category + ":" + attr).foldLeft("")((acc, c) => acc + c.toInt)
   lazy val flatten = category + ":" + attr
@@ -26,10 +25,10 @@ case class Tag(
 }
 
 object Tag {
-  def apply(tag: String, eqTo: Option[List[(Tag, Double)]], rid: String) = {
+  def apply(tag: String, eqTo: Option[List[(Tag, Double)]]) = {
     val splitted = tag.split(":+").toList
     splitted match {
-      case x :: y :: Nil => new Tag(splitted(0), splitted(1), eqTo, rid)
+      case x :: y :: Nil => new Tag(splitted(0), splitted(1), eqTo)
       case _ => throw new Exception("Tag.apply() - No valid tag")
     }
     //new Tag(splitted(0), splitted(1), eqTo)

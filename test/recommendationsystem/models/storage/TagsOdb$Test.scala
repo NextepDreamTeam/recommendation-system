@@ -45,7 +45,7 @@ class TagsOdb$Test extends org.scalatest.FunSuite {
       }
       )
     TagsOdb.all onComplete {
-      case Success(lst) => println(lst.size)
+      case Success(lst) => assert(lst.size == 3)
       case Failure(t) => println("An error has occured: " + t.getMessage)
     }
     tlst map ( x => TagsOdb.remove(x) ) map (

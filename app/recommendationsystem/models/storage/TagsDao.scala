@@ -40,9 +40,8 @@ object TagsOdb extends TagsDao {
 
   override def update(newTag: Tag, oldTag: Tag): Future[Boolean] = {
     val graph = Odb.factory.getTx
-    val v = graph.getVertex(oldTag.rid)
-    v.setProperty("tag",newTag.flatten)
-    newTag.rid = oldTag.rid
+    val vl = graph.getVertices("Tags.tag",oldTag.flatten).asScala
+    vl map (v => v.setProperty("tag",newTag.flatten))
     graph.commit
     Future{true}
   }
@@ -52,17 +51,17 @@ object TagsOdb extends TagsDao {
     ODatabaseRecordThreadLocal.INSTANCE.set(graph.getRawGraph)
     val vlst: Iterable[Vertex] = graph.getVerticesOfClass("Tags").asScala
     graph commit;
-    val lst = vlst map (v => Tag(v.getProperty("tag"),None,v.getId.toString)) toList ;
+    val lst = vlst map (v => Tag(v.getProperty("tag"),None)) toList ;
     graph shutdown ;
     Future{lst}
   }
 
-  //it will be used???
   override def remove(e: Tag): Future[Boolean] = {
     val graph = Odb.factory.getTx
-    println(e.rid)
-    val v: Vertex = graph.getVertex(e.rid)
-    graph.removeVertex(v)
+    val vl: Iterable[Vertex] = graph.getVertices("Tags.tag",e.flatten).asScala
+    //val vl: Iterable[Vertex] = graph.getVertices("Tags",Array("tag"),Array(e.flatten)).asScala
+    graph.commit
+    for(v <- vl) graph.removeVertex(v)
     graph.commit
     graph.shutdown
     Future{true}
@@ -73,14 +72,13 @@ object TagsOdb extends TagsDao {
     val v = graph.addVertex("Tags", null)
     v.setProperty("tag", e.flatten)
     graph.commit
-    e.rid = v.getId.toString
     graph.shutdown()
     Future {true}
   }
 
   override def find(id: String): Future[List[Tag]] = {
-    val graph = Odb.factory.getTx
+    val graph = Odb.factory.getNoTx
     val tlst = graph.getVerticesOfClass("Tags").asScala.filter(p => p.getProperty("tag").equals(id))
-    Future {tlst map (v => Tag(v.getProperty("tag"),None,v.getId.toString)) toList}
+    Future {tlst map (v => Tag(v.getProperty("tag"),None)) toList}
   }
 }

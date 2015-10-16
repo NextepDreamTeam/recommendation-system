@@ -1,10 +1,7 @@
 /*package recommendationsystem.models
 
-import play.modules.reactivemongo._
 import play.api.libs.functional._
 import play.api.libs.json._
-import recommendationsystem.models.storage.MongoObj
-import recommendationsystem.formatters.json._
 import recommendationsystem._
 
 /**
@@ -30,9 +27,10 @@ object Advice {
   def apply(id: String, user: User, input: Option[List[Tag]], output: List[(Tag, Double)]) = new Advice(id, user, output)
   def apply(id: String, user: User, output: List[(Tag, Double)], kind: String) = new Advice(id, user, output, kind)
 
-  implicit val adviceFormatter = formatters.json.AdviceFormatters.storageFormatter
+  //implicit val adviceFormatter = formatters.json.AdviceFormatters.storageFormatter
 
 }
+
 
 /**
  * 
