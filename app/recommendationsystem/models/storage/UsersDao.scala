@@ -27,7 +27,7 @@ trait UsersDao {
 object UsersOdb extends UsersDao {
 
   override def count: Future[Long] = {
-    val graph = Odb.factory.getTx
+    val graph = Odb.factory.getNoTx
     val count = graph.countVertices("Users")
     graph.shutdown()
     Future {
@@ -40,9 +40,8 @@ object UsersOdb extends UsersDao {
     val v = graph.addVertex("Users", null)
     v.setProperty("uid", e.id)
     e.email match {
-      case Some(mail) => v.setProperty("email", e.email)
+      case Some(mail) => v.setProperty("email", mail)
     }
-    graph.commit()
     //Inserting edges in HoldsTag
     e.tags match {
       case Some(tagList) => {
@@ -66,9 +65,6 @@ object UsersOdb extends UsersDao {
   override def remove(e: User): Future[Boolean] = {
     val graph = Odb.factory.getTx
     val userVertex = graph.getVertices("Users.uid", e.id).asScala.head
-    graph.commit()
-    val holdsTagEdges = userVertex.getEdges(Direction.OUT,"HoldsTag").asScala
-    holdsTagEdges map (holdsTagEdge => holdsTagEdge.remove)
     graph.removeVertex(userVertex)
     graph.commit()
     graph.shutdown()
