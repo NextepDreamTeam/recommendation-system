@@ -6,7 +6,6 @@ import com.tinkerpop.blueprints._
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.collection._
 
 /**
  * Created by bsuieric on 15/10/15.
@@ -20,7 +19,7 @@ trait UsersDao {
 
   def all: Future[List[User]]
 
-  def find(id: String): Future[List[User]]
+  def find(id: String): Future[User]
 
 }
 
@@ -85,9 +84,9 @@ object UsersOdb extends UsersDao {
     Future {usersList}
   }
 
-  override def find(id: String): Future[List[User]] = {
+  override def find(id: String): Future[User] = {
     val graph = Odb.factory.getTx
-    val usersListVertex = graph.getVerticesOfClass("Users").asScala.toList
+    val usersListVertex = graph.getVertices("Users.uid", id) .asScala.toList
     val usersList: List[User] = usersListVertex map (userVertex => {
       val userTagsEdge = userVertex.getEdges(Direction.OUT,"HoldsTag").asScala
       val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.OUT))
@@ -96,7 +95,7 @@ object UsersOdb extends UsersDao {
       User(userVertex.getProperty("uid"),Option(userVertex.getProperty("email")),None,Option(tagList))
     })
     graph.shutdown
-    Future {usersList}
+    Future {usersList.head}
   }
 
 }
