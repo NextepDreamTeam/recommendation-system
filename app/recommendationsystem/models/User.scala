@@ -4,6 +4,9 @@ package recommendationsystem.models
 //import recommendationsystem.models.storage.MongoObj
 
 import play.api.libs.json._
+import recommendationsystem.models.storage.{UsersOdb, UsersDao}
+
+import scala.concurrent.Future
 
 case class Anag(
                  name: String,
@@ -77,17 +80,12 @@ object User {
   }
 
 }
-/*
 
- * Companion object for manage class User, contains utility method and databases access method
 
-object Users extends MongoObj[User] {
+ // Companion object for manage class User, contains utility method and databases access method
 
-  /** Collection name of mongodb */
-  val collectionName = "users"//"recommendation.users"
-
-  implicit val storageFormat = formatters.json.UserFormatters.storageFormatter
-  /**
+object Users extends UsersDao {
+/**
    * Update tags weights of user
    *
    * @param u User that tags have to be updated
@@ -105,7 +103,15 @@ object Users extends MongoObj[User] {
   //    }
   //  }
 
+  override def count: Future[Long] = UsersOdb.count
+
+  override def all: Future[List[User]] = UsersOdb.all
+
+  override def remove(e: User): Future[Boolean] = UsersOdb.remove(e)
+
+  override def save(e: User, upsert: Boolean): Future[Boolean] = UsersOdb.save(e,upsert)
+
+  override def find(id: String): Future[User] = UsersOdb.find(id)
 }
- */
 
 

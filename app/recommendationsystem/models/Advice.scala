@@ -2,7 +2,9 @@ package recommendationsystem.models
 
 import play.api.libs.functional._
 import play.api.libs.json._
-import recommendationsystem._
+import recommendationsystem.models.storage.{AdvicesOdb, AdvicesDao}
+
+import scala.concurrent.Future
 
 /**
  * 
@@ -31,12 +33,20 @@ object Advice {
 
 }
 
-/*
+
 /**
  * 
  */
-object Advices extends MongoObj[Advice] {
-  val collectionName = "advices"//"recommendation.advices"
-  implicit val storageFormat = formatters.json.AdviceFormatters.storageFormatter
+object Advices extends AdvicesDao {
+  override def count: Future[Long] = AdvicesOdb.count
+
+  override def update(newAdvice: Advice): Future[Boolean] = AdvicesOdb.update(newAdvice)
+
+  override def all: Future[List[Advice]] = AdvicesOdb.all
+
+  override def remove(e: Advice): Future[Boolean] = AdvicesOdb.remove(e)
+
+  override def save(e: Advice, upsert: Boolean): Future[Boolean] = AdvicesOdb.save(e,upsert)
+
+  override def find(id: String): Future[Option[Advice]] = AdvicesOdb.find(id)
 }
-*/
