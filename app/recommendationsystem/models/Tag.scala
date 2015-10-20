@@ -1,6 +1,6 @@
 package recommendationsystem.models
 
-import recommendationsystem.models.storage.TagsOdb
+import recommendationsystem.models.storage.{TagsDao, TagsOdb}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
 import play.api.Play.current
@@ -49,7 +49,7 @@ object Tag {
 }
 
 
-object Tags {
+object Tags extends TagsDao {
 
   def count: Future[Long] = Tags.count
 
