@@ -31,14 +31,15 @@ object TagsOdb extends TagsDao {
     count
   }
 
-  override def update(newTag: Tag, oldTag: Tag): Future[Boolean] = Future {
+  override def update(newTag: Tag, oldTag: Tag): Future[Boolean] = Future { synchronized {
     val graph = Odb.factory.getTx
     val tagVertices = graph.getVertices("Tags.tag",oldTag.flatten).asScala
     if(tagVertices.isEmpty) throw new Exception("Tag not found: "+oldTag.id)
     tagVertices.head.setProperty("tag",newTag.flatten)
     graph.commit()
     true
-  }
+  }}
+
 
   override def all: Future[List[Tag]] = Future {
     val graph = Odb.factory.getNoTx
@@ -47,16 +48,16 @@ object TagsOdb extends TagsDao {
     tagList
   }
 
-  override def remove(e: Tag): Future[Boolean] = Future {
+  override def remove(e: Tag): Future[Boolean] = Future { synchronized {
     val graph = Odb.factory.getTx
     val tagVertices = graph.getVertices("Tags.tag",e.flatten).asScala
     if(tagVertices.isEmpty) throw new Exception("Tag not found: "+e.flatten)
     tagVertices.head.remove()
     graph.commit()
     true
-  }
+  }}
 
-  override def save(e: Tag, upsert: Boolean = false): Future[Boolean] = Future {
+  override def save(e: Tag, upsert: Boolean = false): Future[Boolean] = Future { synchronized {
     val graph = Odb.factory.getTx
     val v = graph.getVertices("Tags.tag",e.flatten).asScala
     if(v.nonEmpty) {
@@ -70,7 +71,7 @@ object TagsOdb extends TagsDao {
     }
     graph.commit()
     true
-  }
+  }}
 
   override def find(id: String): Future[Tag] = Future {
     val graph = Odb.factory.getNoTx

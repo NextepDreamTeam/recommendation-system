@@ -18,11 +18,13 @@ class UsersOdb$Test extends FunSuite with BeforeAndAfterEach {
   val tagTest = Tag("tag","test")
 
   override def beforeEach() {
-    TagsOdb.save(tagTest)
+    Odb.clearDb
+    val add = TagsOdb.save(tagTest)
+    Await.result(add,Duration(3,TimeUnit.SECONDS))
   }
 
   override def afterEach() {
-    TagsOdb.remove(tagTest)
+    Odb.clearDb
   }
 
   test("UsersOdb.count method invoked") {
@@ -34,64 +36,62 @@ class UsersOdb$Test extends FunSuite with BeforeAndAfterEach {
     Await.result(fres,Duration(3,TimeUnit.SECONDS))
   }
 
-  /*test("UsersOdb.save, find and remove method invoked testSave") {
+  test("UsersOdb.save, find and remove method invoked testSave") {
     val test = User("12345", Option("bgd@hot.it"), None, Option((tagTest,42D,42L)::List()))
-    val fresSave = UsersOdb.save(test)
-    fresSave onComplete{
+    val save = UsersOdb.save(test)
+    save onComplete{
       case Success(b) => assert(b)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
-    val fresFind = UsersOdb.find("12345")
-    fresFind onComplete {
-      case Success(l) => assert(l.size==1)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+    Await.result(save,Duration(3,TimeUnit.SECONDS))
+    val find = UsersOdb.find("12345")
+    find onComplete {
+      case Success(l) => assert(l.isDefined)
+      case Failure(t) => assert(false)
     }
-    val fresDelete = UsersOdb.remove(test)
-    fresDelete onComplete{
+    Await.result(find,Duration(3,TimeUnit.SECONDS))
+    val delete = UsersOdb.remove(test)
+    delete onComplete{
       case Success(b) => assert(b)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
+    Await.result(delete,Duration(3,TimeUnit.SECONDS))
   }
 
   test("UsersOdb.all method invoked testAll") {
-    val u1 = User("primo", Option("bgd@hot.it"), None, Option((tagTest,42D,42L)::List()))
-    val u2 = User("secondo", Option("bgd@hot.it"), None, Option((tagTest,42D,42L)::List()))
-    val u3 = User("terzo", Option("bgd@hot.it"), None, Option((tagTest,42D,42L)::List()))
-    val uList = u1 :: u2 :: u3 :: List()
-    uList map (x => UsersOdb.save(x)) map(
+    val uList =
+      User("primo", Option("bgd@hot.it"), None, Option((tagTest,42D,42L)::List())) ::
+      User("secondo", Option("bgd@hot.it"), None, Option((tagTest,42D,42L)::List())) ::
+      User("terzo", Option("bgd@hot.it"), None, Option((tagTest,42D,42L)::List())) ::
+        List()
+    val trdIns = uList map (x => UsersOdb.save(x))
+    trdIns foreach(
       t => t onComplete {
         case Success(r) => assert(r)
-        case Failure(t) => println("An error has occured: " + t.getMessage)
-      }
-      )
-    UsersOdb.all onComplete {
+        case Failure(t) => assert(false)
+      })
+    trdIns map ( u => Await.result(u,Duration(3,TimeUnit.SECONDS)))
+    val all = UsersOdb.all
+    all onComplete {
       case Success(list) => assert(list.size == 3)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
-    uList map (x => UsersOdb.remove(x)) map (
-      t => t onComplete {
-       case Success(r) => assert(r)
-       case Failure(t) => println("An error has occured: " + t.getMessage)
-      }
-     )
-    assert(true)
+    Await.result(all,Duration(3,TimeUnit.SECONDS))
   }
 
   test("UserOdb.update is invoked") {
-    TagsOdb.save(tagTest,true)
-    /*val newTagTest = Tag("nuovo","tag")
-    TagsOdb.save(newTagTest)
+    val newTagTest = Tag("nuovo","tag")
+    Await.result(TagsOdb.save(newTagTest),Duration(3,TimeUnit.SECONDS))
     val oldUser = User("12345", Option("bgd@hot.it"), None,Option((tagTest,42D,42L)::List()))
-    UsersOdb.save(oldUser)
+    Await.result(UsersOdb.save(oldUser),Duration(3,TimeUnit.SECONDS))
     val newUser = User("12345",Option("bgd@hat.ru"),None,Option((newTagTest,50D,40L)::List()))
-    UsersOdb.update(newUser) onComplete {
+    val update = UsersOdb.update(newUser)
+    update onComplete {
       case Success(r) => assert(r)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
-    UsersOdb.remove(newUser)
-    TagsOdb.remove(newTagTest)*/
-    assert(true)
-  }*/
+    Await.result(update,Duration(3,TimeUnit.SECONDS))
+  }
 
 }
 

@@ -31,39 +31,43 @@ object UsersOdb extends UsersDao {
     graph.countVertices("Users")
   }
 
-  override def save(e: User, upsert: Boolean): Future[Boolean] = Future {
-    val graph = Odb.factory.getTx()
+  override def save(e: User, upsert: Boolean): Future[Boolean] = Future  { synchronized {
+    val graph = Odb.factory.getTx
     val v = graph.addVertex("Users", null)
     v.setProperty("uid", e.id)
+    //inserting email field
     e.email match {
       case Some(mail) => v.setProperty("email", mail)
-      case None => {} //do nothing
+      case None => //do nothing
     }
     //Inserting edges in HoldsTag
     e.tags match {
-      case Some(tagList) => {
-        //tags must be present in database; creating edges from User to Tag
+      case Some(tagList) =>
         tagList foreach
           (t => {
-            val tagVertex = graph.getVertices("Tags.tag", t._1.flatten).asScala.head
+            //tag must be present in database; creating edge from User to Tag
+            val tagVertices = graph.getVertices("Tags.tag", t._1.flatten).asScala
+            if (tagVertices.isEmpty) throw new Exception("Tag not present in database")
+            val tagVertex = tagVertices.head
             val userHoldsTagEdge = graph.addEdge(null,v,tagVertex,"HoldsTag")
             userHoldsTagEdge.setProperty("weight",t._2)
             userHoldsTagEdge.setProperty("lastInsert",t._3)
           })
-      }
-      case None => {}
+      case None =>
     }
     graph.commit()
     true
-  }
+  }}
 
-  override def remove(e: User): Future[Boolean] = Future {
+  override def remove(e: User): Future[Boolean] = Future { synchronized {
     val graph = Odb.factory.getTx
-    val userVertex = graph.getVertices("Users.uid", e.id).asScala.head
+    val userVertices = graph.getVertices("Users.uid", e.id).asScala
+    if(userVertices.isEmpty) throw new Exception("User not present in database")
+    val userVertex = userVertices.head
     graph.removeVertex(userVertex)
     graph.commit()
     true
-  }
+  }}
 
   override def all: Future[List[User]] = Future {
     val graph = Odb.factory.getNoTx
@@ -79,64 +83,62 @@ object UsersOdb extends UsersDao {
   }
 
   override def find(id: String): Future[Option[User]] = Future {
-    val graph = Odb.factory.getNoTx()
+    val graph = Odb.factory.getNoTx
     val usersListVertex = graph.getVertices("Users.uid", id) .asScala.toList
     usersListVertex match {
-      case userVertex :: xs => {
+      case userVertex :: xs =>
         val userTagsEdge = userVertex.getEdges(Direction.OUT,"HoldsTag").asScala
         val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.OUT))
         val tagList = userTagsEdge zip userTagsVertex map
           (x => (x._2.getProperty("tag"),x._1.getProperty("weight"),x._1.getProperty("lastInsert"))) toList;
         Option(User(userVertex.getProperty("uid"),Option(userVertex.getProperty("email")),None,Option(tagList)))
-      }
       case Nil => None
     }
-
   }
 
-  //da controllare
   override def update(e: User): Future[Boolean] = Future {
-    val graph = Odb.factory.getTx
-    val usersListVertex = graph.getVertices("Users.uid", e.id) .asScala.toList
-    usersListVertex match {
-      case userVertex :: xs => {
+    synchronized {
+      val graph = Odb.factory.getTx
+      val usersListVertex = graph.getVertices("Users.uid", e.id).asScala
+      if (usersListVertex.isEmpty)
+        false
+      else {
+        val userVertex = usersListVertex.head
         //updating user field
         e.email match {
-          case Some(mail) => userVertex.setProperty("email",mail)
-          case None => {}
+          case Some(mail) => userVertex.setProperty("email", mail)
+          case None =>
         }
-        val userTagsEdge = userVertex.getEdges(Direction.OUT,"HoldsTag").asScala.toList
+        val userTagsEdge = userVertex.getEdges(Direction.OUT, "HoldsTag").asScala.toList
         e.tags match {
-          case Some(tl) => {
+          case Some(tl) =>
             tl match {
-              case hts :: ts => { //maybe there's tags to add
-                val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.OUT))
+              case hts :: ts =>
+                //maybe there's tags to add
+                val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.IN))
                 val edgesToAdd = tl.filter(
-                  t => ! userTagsVertex.map(x => x.getProperty("tag").toString).contains(t._1.flatten)
+                  t => !userTagsVertex.map(x => x.getProperty("tag").toString).contains(t._1.flatten)
                 )
-                edgesToAdd.map(
+                edgesToAdd.foreach(
                   e => {
-                    val tagVertex = graph.getVertices("Tags.tag",e._1.flatten).asScala.head
-                    val holdsTagEdge = graph.addEdge(null,userVertex,tagVertex,"HoldsTag")
-                    holdsTagEdge.setProperty("lastInsert",e._3)
-                    holdsTagEdge.setProperty("weight",e._2)
+                    val tagVertex = graph.getVertices("Tags.tag", e._1.flatten).asScala.head
+                    val holdsTagEdge = graph.addEdge(null, userVertex, tagVertex, "HoldsTag")
+                    holdsTagEdge.setProperty("lastInsert", e._3)
+                    holdsTagEdge.setProperty("weight", e._2)
                   }
                 )
                 val tagList = userTagsVertex zip userTagsEdge //tags into db
                 val edgesToRemove = tagList.filter(
-                  ove => !tl.map(t => t._1.flatten).contains(ove._1.getProperty("tag"))
+                    ove => !tl.map(t => t._1.flatten).contains(ove._1.getProperty("tag"))
                   )
-                edgesToRemove.map( e => e._2.remove())
-              }
-              case Nil => userTagsEdge.map(e => e.remove())
+                edgesToRemove.foreach(e => e._2.remove())
+              case Nil => userTagsEdge.foreach(e => e.remove())
             }
-          }
-          case None => userTagsEdge.map(e => e.remove())
+          case None => userTagsEdge.foreach(e => e.remove())
         }
         graph.commit()
         true
       }
-      case Nil => false
     }
   }
 }

@@ -57,13 +57,7 @@ class TagsOdb$Test extends org.scalatest.FunSuite {
       case Failure(t) => assert(false)
     }
     Await.result(all,Duration(3,duration.SECONDS))
-    val threadsRemove = tlst map (x => TagsOdb.remove(x))
-    threadsRemove foreach (thread => thread onComplete {
-        case Success(r) => assert(r)
-        case Failure(t) => assert(false)
-      }
-      )
-    threadsRemove foreach (thread => Await.result(thread,Duration(3,duration.SECONDS)))
+    Odb.clearDb
   }
 
   test("TagsOdb.update is invoked") {
@@ -81,12 +75,7 @@ class TagsOdb$Test extends org.scalatest.FunSuite {
       case Failure(t) => assert(false)
     }
     Await.result(update,Duration(5000,duration.MILLISECONDS))
-    val remove = TagsOdb.remove(nt)
-    remove onComplete {
-      case Success(b) => assert(b)
-      case Failure(t) => assert(false)
-    }
-    Await.result(remove,Duration(5000,duration.MILLISECONDS))
+    Odb.clearDb
   }
 
   test("TagsOdb.find is invoked") {
@@ -102,12 +91,7 @@ class TagsOdb$Test extends org.scalatest.FunSuite {
       case Failure(t) => assert(false)
     }
     Await.result(find,Duration(5000,duration.MILLISECONDS))
-    val remove = TagsOdb.remove(t)
-    remove onComplete {
-      case Success(b) => assert(b)
-      case Failure(t) => assert(false)
-    }
-    Await.result(remove,Duration(5000,duration.MILLISECONDS))
+    Odb.clearDb
   }
 
 }
