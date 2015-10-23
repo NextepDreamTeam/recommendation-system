@@ -1,4 +1,4 @@
-/*package recommendationsystem.models.storage
+package recommendationsystem.models.storage
 
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
 import com.tinkerpop.blueprints.{Direction, Vertex}
@@ -27,24 +27,30 @@ trait AdvicesDao {
 }
 
 object AdvicesOdb extends AdvicesDao {
-  override def count: Future[Long] = {
+  override def count: Future[Long] = Future {
     val graph = Odb.factory.getNoTx
-    val count = graph.countVertices("Advices")
-    graph.shutdown()
-    Future{count}
+    graph.countVertices("Advices")
   }
 
-  override def update(newAdvice: Advice): Future[Boolean] = {
+  override def update(newAdvice: Advice): Future[Boolean] = Future { synchronized {
     val graph = Odb.factory.getTx
-    val adviceVertex = graph.getVertices("Advices.aid",newAdvice.id).asScala.head
+    val adviceVertices = graph.getVertices("Advices.aid",newAdvice.id).asScala
+    if (adviceVertices.isEmpty) throw new Exception("Advice not present in database")
+    val adviceVertex = adviceVertices.head
+    adviceVertex.setProperty("clicked",newAdvice.clicked)
     adviceVertex.setProperty("date",newAdvice.date)
     adviceVertex.setProperty("type",newAdvice.kind)
+
     //update user
-    val adviceUserEdge = adviceVertex.getEdges(Direction.OUT,"AdviceUser").asScala.head
+    val adviceUserEdges = adviceVertex.getEdges(Direction.OUT,"AdviceUser").asScala
+    if (adviceUserEdges.isEmpty) throw new Exception("oldAdviceUser not present in database")
+    val adviceUserEdge = adviceUserEdges.head
     val userVertex = adviceUserEdge.getVertex(Direction.IN)
     val actualUser = userVertex.getProperty("uid").toString
     if(! actualUser.equals(newAdvice.user.id)) {
-      val newUserVertex = graph.getVertices("Users.uid",newAdvice.user.id).asScala.head
+      val newUserVertices = graph.getVertices("Users.uid",newAdvice.user.id).asScala
+      if (newUserVertices.isEmpty) new Exception("newUser not present in database")
+      val newUserVertex = newUserVertices.head
       adviceUserEdge.remove()
       graph.addEdge(null,adviceVertex,newUserVertex,"AdviceUser")
     }
@@ -55,7 +61,7 @@ object AdvicesOdb extends AdvicesDao {
     val tagList = newAdvice.output.map(x => x._1)
 
     println("Tag presenti nel db")
-    tagsAdviceVertex.map(x => println(x.getProperty("tag").toString))
+    tagsAdviceVertex.foreach(x => println(x.getProperty("tag").toString))
 
     //tags to add into db
     val tagsToAdd = tagList.filter(
@@ -66,7 +72,9 @@ object AdvicesOdb extends AdvicesDao {
     for (t <- tagsToAdd ) {
       println(t.flatten)
       //println(adviceVertex.getProperty("aid"))
-      val tagVertex = graph.getVertices("Tags.tag",t.flatten).asScala.head
+      val tagVertices = graph.getVertices("Tags.tag",t.flatten).asScala
+      if(tagVertices.isEmpty) throw new Exception("Tag not present in database")
+      val tagVertex = tagVertices.head
       graph.addEdge(null,adviceVertex,tagVertex,"AdviceOutput")
     }
 
@@ -74,11 +82,11 @@ object AdvicesOdb extends AdvicesDao {
     val edgesToRemove = outputEdgesVertices.filter( oev => !tagList.map(t => t.flatten).contains(oev._2.getProperty("tag")) ).map(ev => ev._1)
     //removing edges
     println("tag rimossi:")
-    edgesToRemove.map(x => x.getVertex(Direction.IN)).map(v => println(v.getProperty("tag")))
-    edgesToRemove.map(e => e.remove())
+    edgesToRemove.map(x => x.getVertex(Direction.IN)).foreach(v => println(v.getProperty("tag")))
+    edgesToRemove.foreach(e => e.remove())
     graph.commit()
-    graph.shutdown()
-    Future{true}
+    true
+  }
   }
 
   override def all: Future[List[Advice]] = {
@@ -104,10 +112,10 @@ object AdvicesOdb extends AdvicesDao {
         adviceVertex.getProperty("aid"),
         user,output,
         adviceVertex.getProperty("date"),
+        adviceVertex.getProperty("clicked"),
         adviceVertex.getProperty("type")
       )
     })
-    graph.shutdown
     Future{lst.toList}
   }
 
@@ -119,30 +127,38 @@ object AdvicesOdb extends AdvicesDao {
     Future{true}
   }
 
-  override def save(e: Advice, upsert: Boolean): Future[Boolean] = {
+  override def save(e: Advice, upsert: Boolean): Future[Boolean] = Future { synchronized {
     val graph = Odb.factory.getTx
-    val adviceVertex = graph.addVertex("Advices",null)
-    adviceVertex.setProperty("aid",e.id)
-    adviceVertex.setProperty("date",e.date)
-    adviceVertex.setProperty("type",e.kind)
+    val adviceVertex = graph.addVertex("Advices", null)
+    adviceVertex.setProperty("aid", e.id)
+    adviceVertex.setProperty("date", e.date)
+    adviceVertex.setProperty("clicked", e.clicked)
+    adviceVertex.setProperty("type", e.kind)
+
     //adding AdviceUser edge
-    val userVertex = graph.getVertices("Users.uid",e.user.id).asScala.head //must be one
-    val adviceUserEdge = graph.addEdge(null,adviceVertex,userVertex,"AdviceUser")
+    val userVertices = graph.getVertices("Users.uid", e.user.id).asScala
+    if (userVertices.isEmpty) throw new Exception("User not present in database")
+    val userVertex = userVertices.head //must be one
+    graph.addEdge(null, adviceVertex, userVertex, "AdviceUser")
+
     //adding AdviceOutput edge
-    for ( (tag, pt) <- e.output ) {
-      val tagVertex = graph.getVertices("Tags.tag",tag.flatten).asScala.head
-      val adviceOutputEdge = graph.addEdge(null,adviceVertex,tagVertex,"AdviceOutput")
+    for ((tag, pt) <- e.output) {
+      val tagVertices = graph.getVertices("Tags.tag", tag.flatten).asScala
+      if (tagVertices.isEmpty) throw new Exception("Tag not present in database")
+      val tagVertex = tagVertices.head
+      graph.addEdge(null, adviceVertex, tagVertex, "AdviceOutput")
     }
+
     graph.commit
-    graph.shutdown
-    Future{true}
+    true
+  }
   }
 
-  override def find(id: String): Future[Option[Advice]] = {
+  override def find(id: String): Future[Option[Advice]] = Future {
     val graph = Odb.factory.getNoTx
     val adviceVertices = graph.getVertices("Advices.aid",id).asScala
     if(adviceVertices.isEmpty)
-      Future{None}
+      None
     else {
       val adviceVertex = adviceVertices.head //must be one
       val userVertex = adviceVertex.getEdges(Direction.OUT,"AdviceUser").asScala
@@ -155,9 +171,10 @@ object AdvicesOdb extends AdvicesDao {
         userVertex.getProperty("uid"),
         output,
         adviceVertex.getProperty("date"),
+        adviceVertex.getProperty("clicked"),
         adviceVertex.getProperty("type")
       )
-      Future{Option(advice)}
+      Option(advice)
     }
   }
-}*/
+}
