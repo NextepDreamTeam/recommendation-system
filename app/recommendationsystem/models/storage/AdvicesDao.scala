@@ -1,4 +1,4 @@
-package recommendationsystem.models.storage
+/*package recommendationsystem.models.storage
 
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
 import com.tinkerpop.blueprints.{Direction, Vertex}
@@ -160,4 +160,4 @@ object AdvicesOdb extends AdvicesDao {
       Future{Option(advice)}
     }
   }
-}
+}*/

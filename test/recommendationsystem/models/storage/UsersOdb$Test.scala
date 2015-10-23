@@ -1,8 +1,12 @@
 package recommendationsystem.models.storage
 
+import java.util.concurrent.TimeUnit
+
 import recommendationsystem.models.{User, Tag}
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -25,11 +29,12 @@ class UsersOdb$Test extends FunSuite with BeforeAndAfterEach {
     val fres = UsersOdb.count
     fres onComplete {
       case Success(count) => println(count); assert(true);
-      case Failure(t) => println("An error has occured : " + t.getMessage)
+      case Failure(t) => assert(false)
     }
+    Await.result(fres,Duration(3,TimeUnit.SECONDS))
   }
 
-  test("UsersOdb.save, find and remove method invoked testSave") {
+  /*test("UsersOdb.save, find and remove method invoked testSave") {
     val test = User("12345", Option("bgd@hot.it"), None, Option((tagTest,42D,42L)::List()))
     val fresSave = UsersOdb.save(test)
     fresSave onComplete{
@@ -72,6 +77,21 @@ class UsersOdb$Test extends FunSuite with BeforeAndAfterEach {
     assert(true)
   }
 
-
+  test("UserOdb.update is invoked") {
+    TagsOdb.save(tagTest,true)
+    /*val newTagTest = Tag("nuovo","tag")
+    TagsOdb.save(newTagTest)
+    val oldUser = User("12345", Option("bgd@hot.it"), None,Option((tagTest,42D,42L)::List()))
+    UsersOdb.save(oldUser)
+    val newUser = User("12345",Option("bgd@hat.ru"),None,Option((newTagTest,50D,40L)::List()))
+    UsersOdb.update(newUser) onComplete {
+      case Success(r) => assert(r)
+      case Failure(t) => println("An error has occured: " + t.getMessage)
+    }
+    UsersOdb.remove(newUser)
+    TagsOdb.remove(newTagTest)*/
+    assert(true)
+  }*/
 
 }
+

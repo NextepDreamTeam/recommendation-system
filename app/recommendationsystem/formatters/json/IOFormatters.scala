@@ -50,6 +50,7 @@ object OutputFormatters {
   }
 
 }
+/*
 /**
  * object that represents the formatters for a FindSuggestion object.
  * It provides the implicit to pass from a JsValue to a FindSuggestion object.
@@ -67,4 +68,5 @@ object FindSuggestionFormatters {
 object RangeFormatters {
   implicit val readerFormatter = Json.reads[Range]
 }
+*/
 */

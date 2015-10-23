@@ -43,28 +43,28 @@ object Tag {
     //    Some(a)
   }
 
-  //da eliminare
-  //implicit val tagFormatter = formatters.json.TagFormatters.storageFormatter
+  //implicit val tagFormatter = recommendationsystem.formatters.json.TagFormatters.storageFormatter
 
 }
 
 
 object Tags extends TagsDao {
 
-  def count: Future[Long] = Tags.count
+  def count: Future[Long] = Tags count
 
-  def save(e: Tag, upsert: Boolean = false): Future[Boolean] = TagsOdb save(e,upsert)
+  def save(tag: Tag, upsert: Boolean = false): Future[Boolean] = TagsOdb save(tag,upsert)
 
   def update(newTag: Tag, oldTag: Tag): Future[Boolean] = TagsOdb update(newTag,oldTag)
 
-  def remove(e: Tag): Future[Boolean] = TagsOdb remove e
+  def remove(tag: Tag): Future[Boolean] = TagsOdb remove tag
 
   def all: Future[List[Tag]] = TagsOdb all
 
-  def find(id: String): Future[List[Tag]] = TagsOdb find id
+  def find(idTag: String): Future[Tag] = TagsOdb find idTag
 
 }
 
+/*
 /**
  * Class that represents a tag in a REST request.
  * @constructor Construct a RestTag object.
@@ -82,4 +82,4 @@ object RestTag {
    * The converter from a JsValue to a RestTag object.
    */
   implicit val tagReader = Json.reads[RestTag]
-}
+}*/

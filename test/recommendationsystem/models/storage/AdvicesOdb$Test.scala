@@ -1,4 +1,4 @@
-package recommendationsystem.models.storage
+/*package recommendationsystem.models.storage
 
 import java.util.Calendar
 
@@ -105,3 +105,4 @@ class AdvicesOdb$Test extends FunSuite with BeforeAndAfterEach {
   }
 
 }
+*/

@@ -1,4 +1,4 @@
-package recommendationsystem.models.storage
+/*package recommendationsystem.models.storage
 
 import scala.concurrent.Future
 
@@ -17,4 +17,4 @@ object  RequestOdb extends RequestDao {
     graph.shutdown()
     Future{count}
   }
-}
+}*/

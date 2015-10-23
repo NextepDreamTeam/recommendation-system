@@ -6,13 +6,9 @@ import play.api.data.validation.ValidationError
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
-import play.modules.reactivemongo._
-import play.modules.reactivemongo.json.collection.JSONCollection
-import play.modules.reactivemongo.ReactiveMongoPlugin
 import play.api.Play.current
 import play.api.libs.json.Json
 import play.api.libs.iteratee.Enumerator
-import recommendationsystem.models.storage.MongoObj
 import play.api.data.validation.ValidationError
 
 import recommendationsystem.models.Tag

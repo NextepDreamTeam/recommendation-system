@@ -1,12 +1,10 @@
 package recommendationsystem.models
 
-//import play.modules.reactivemongo._
-//import recommendationsystem.models.storage.MongoObj
 
 import play.api.libs.json._
 import recommendationsystem.models.storage.{UsersOdb, UsersDao}
-
 import scala.concurrent.Future
+
 
 case class Anag(
                  name: String,
@@ -72,7 +70,7 @@ case class User(
 /** Companion object for class User */
 object User {
 
-  //implicit val userFormat: Format[User] = formatters.json.UserFormatters.storageFormatter
+  //implicit val userFormat: Format[User] = recommendationsystem.formatters.json.UserFormatters.storageFormatter
 
   def applyWithToken(id: String, _email: Option[String] = None, token: Option[String], anag: Option[Anag] = None, tags: Option[List[(Tag, Double, Long)]] = None) = {
     val email = _email.orElse(token)
@@ -80,7 +78,7 @@ object User {
   }
 
 }
-
+/*
 
  // Companion object for manage class User, contains utility method and databases access method
 
@@ -111,7 +109,10 @@ object Users extends UsersDao {
 
   override def save(e: User, upsert: Boolean): Future[Boolean] = UsersOdb.save(e,upsert)
 
-  override def find(id: String): Future[User] = UsersOdb.find(id)
+  override def find(id: String): Future[Option[User]] = UsersOdb.find(id)
+
+  override def update(e: User): Future[Boolean] = UsersOdb.update(e)
 }
 
 
+*/

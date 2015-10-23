@@ -25,7 +25,7 @@ object CorsAction extends ActionBuilder[Request] {
         ACCESS_CONTROL_ALLOW_CREDENTIALS -> "true"))
   }
   
-  def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[SimpleResult]) = {
+  def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
     block(request)
   }
   

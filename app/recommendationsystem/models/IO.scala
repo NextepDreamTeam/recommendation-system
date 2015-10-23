@@ -37,7 +37,7 @@ case class Output(recommendation: Advice, user: Option[User], mandatoryTags: Opt
 case class FindSuggestion(
     category: String,
     product: String)
-    
+/*
 /**
  * object that provides the formatters from a json to a FindSuggestion value.
  * @author Alberto Adami
@@ -60,5 +60,5 @@ case class Range (
 
 object Range {
   implicit val storageFormatters = recommendationsystem.formatters.json.InputFormatters
-}
+}*/
 */

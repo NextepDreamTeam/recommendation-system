@@ -1,7 +1,9 @@
 package recommendationsystem.models.storage
 
-import recommendationsystem.models.Tag
 
+import recommendationsystem.models.Tag
+import scala.concurrent.{duration, Await}
+import scala.concurrent.duration.Duration
 import scala.util.{Success, Failure}
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,21 +18,24 @@ class TagsOdb$Test extends org.scalatest.FunSuite {
     val fres = TagsOdb.count
     fres onComplete {
       case Success(count) => assert(count == 0L)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
+    Await.result(fres,Duration(5000,duration.MILLISECONDS))
   }
 
   test("TagsOdb.save is invoked and TagsOdb.remove is invoked") {
-    val fres1 = TagsOdb.save(t)
-    fres1 onComplete {
-      case Success(b) => assert(b)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+    val fresSave = TagsOdb.save(t)
+    fresSave onComplete {
+      case Success(r) => assert(r)
+      case Failure(t) => assert(false)
     }
-    val fres2 = TagsOdb.remove(t)
-    fres2 onComplete {
+    Await.result(fresSave,Duration(5000,duration.MILLISECONDS))
+    val fresRemove = TagsOdb.remove(t)
+    fresRemove onComplete {
       case Success(b) => assert(b)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
+    Await.result(fresRemove,Duration(5000,duration.MILLISECONDS))
   }
 
   test("TagsOdb.all is invoked") {
@@ -38,55 +43,71 @@ class TagsOdb$Test extends org.scalatest.FunSuite {
     val t2 = Tag("due","due")
     val t3 = Tag("tre","tre")
     val tlst = t1 :: t2 :: t3 :: List()
-    tlst map ( x => TagsOdb.save(x) ) map (
+    val threadsInsert = tlst map ( x => TagsOdb.save(x) )
+    threadsInsert foreach (
       t => t onComplete {
         case Success(r) => assert(r)
-        case Failure(t) => println("An error has occured: " + t.getMessage)
+        case Failure(t) => assert(false)
       }
       )
-    TagsOdb.all onComplete {
+    threadsInsert foreach (thread => Await.result(thread,Duration(3,duration.SECONDS)))
+    val all = TagsOdb.all
+    all onComplete {
       case Success(lst) => assert(lst.size == 3)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
-    tlst map ( x => TagsOdb.remove(x) ) map (
-      t => t onComplete {
+    Await.result(all,Duration(3,duration.SECONDS))
+    val threadsRemove = tlst map (x => TagsOdb.remove(x))
+    threadsRemove foreach (thread => thread onComplete {
         case Success(r) => assert(r)
-        case Failure(t) => println("An error has occured: " + t.getMessage)
+        case Failure(t) => assert(false)
       }
       )
-    assert(true)
+    threadsRemove foreach (thread => Await.result(thread,Duration(3,duration.SECONDS)))
   }
 
   test("TagsOdb.update is invoked") {
     val ot = Tag("sette","sette")
-    TagsOdb.save(ot) onComplete {
+    val save = TagsOdb.save(ot)
+    save onComplete {
       case Success(r) => assert(r)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
+    Await.result(save,Duration(5000,duration.MILLISECONDS))
     val nt = Tag(ot.attr,"te")
-    TagsOdb.update(nt,ot) onComplete {
+    val update = TagsOdb.update(nt,ot)
+    update onComplete {
       case Success(r) => assert(r)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
-    TagsOdb.remove(nt) onComplete {
+    Await.result(update,Duration(5000,duration.MILLISECONDS))
+    val remove = TagsOdb.remove(nt)
+    remove onComplete {
       case Success(b) => assert(b)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
+    Await.result(remove,Duration(5000,duration.MILLISECONDS))
   }
 
   test("TagsOdb.find is invoked") {
-    TagsOdb.save(t) onComplete {
+    val save = TagsOdb.save(t)
+    save onComplete {
       case Success(r) => assert(r)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
-    TagsOdb.find(t.flatten) onComplete {
-      case Success(l) => assert(l.size == 1); assert(l.head.equals(t))
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+    Await.result(save,Duration(5000,duration.MILLISECONDS))
+    val find = TagsOdb.find(t.flatten)
+    find onComplete {
+      case Success(l) => assert(l.equals(t))
+      case Failure(t) => assert(false)
     }
-    TagsOdb.remove(t) onComplete {
+    Await.result(find,Duration(5000,duration.MILLISECONDS))
+    val remove = TagsOdb.remove(t)
+    remove onComplete {
       case Success(b) => assert(b)
-      case Failure(t) => println("An error has occured: " + t.getMessage)
+      case Failure(t) => assert(false)
     }
+    Await.result(remove,Duration(5000,duration.MILLISECONDS))
   }
 
 }

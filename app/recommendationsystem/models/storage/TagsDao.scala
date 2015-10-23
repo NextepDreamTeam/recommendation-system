@@ -1,11 +1,5 @@
 package recommendationsystem.models.storage
 
-import com.orientechnologies.orient.core.command.OCommandRequest
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
-import com.orientechnologies.orient.core.sql.OCommandSQL
-import com.tinkerpop.blueprints.{Parameter, Vertex}
-import com.tinkerpop.blueprints.impls.orient.{OrientVertex, OrientDynaElementIterable}
-
 import recommendationsystem.models.Tag
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -20,65 +14,68 @@ trait TagsDao {
 
   def save(e: Tag, upsert: Boolean = false): Future[Boolean]
 
-  def update(newTag: Tag, oldTag: Tag): Future[Boolean] //it will be used???
+  def update(newTag: Tag, oldTag: Tag): Future[Boolean]
 
   def remove(e: Tag): Future[Boolean]
 
   def all: Future[List[Tag]]
 
-  def find(id: String): Future[List[Tag]]
+  def find(id: String): Future[Tag]
 }
 
 
 object TagsOdb extends TagsDao {
-  override def count: Future[Long] = {
+  override def count: Future[Long] = Future {
     val graph = Odb.factory.getNoTx
     val count = graph.countVertices("Tags")
-    graph.shutdown()
-    Future{count}
+    count
   }
 
-  override def update(newTag: Tag, oldTag: Tag): Future[Boolean] = {
+  override def update(newTag: Tag, oldTag: Tag): Future[Boolean] = Future {
     val graph = Odb.factory.getTx
-    val vl = graph.getVertices("Tags.tag",oldTag.flatten).asScala
-    vl map (v => v.setProperty("tag",newTag.flatten))
-    graph.commit
-    Future{true}
+    val tagVertices = graph.getVertices("Tags.tag",oldTag.flatten).asScala
+    if(tagVertices.isEmpty) throw new Exception("Tag not found: "+oldTag.id)
+    tagVertices.head.setProperty("tag",newTag.flatten)
+    graph.commit()
+    true
   }
 
-  override def all: Future[List[Tag]] = {
-    val graph = Odb.factory.getTx
-    ODatabaseRecordThreadLocal.INSTANCE.set(graph.getRawGraph)
-    val vlst: Iterable[Vertex] = graph.getVerticesOfClass("Tags").asScala
-    graph commit;
-    val lst = vlst map (v => Tag(v.getProperty("tag"),None)) toList ;
-    graph shutdown ;
-    Future{lst}
-  }
-
-  override def remove(e: Tag): Future[Boolean] = {
-    val graph = Odb.factory.getTx
-    val vl: Iterable[Vertex] = graph.getVertices("Tags.tag",e.flatten).asScala
-    //val vl: Iterable[Vertex] = graph.getVertices("Tags",Array("tag"),Array(e.flatten)).asScala
-    graph.commit
-    for(v <- vl) graph.removeVertex(v)
-    graph.commit
-    graph.shutdown
-    Future{true}
-  }
-
-  override def save(e: Tag, upsert: Boolean): Future[Boolean] = {
-    val graph = Odb.factory.getTx
-    val v = graph.addVertex("Tags", null)
-    v.setProperty("tag", e.flatten)
-    graph.commit
-    graph.shutdown()
-    Future {true}
-  }
-
-  override def find(id: String): Future[List[Tag]] = {
+  override def all: Future[List[Tag]] = Future {
     val graph = Odb.factory.getNoTx
-    val tlst = graph.getVerticesOfClass("Tags").asScala.filter(p => p.getProperty("tag").equals(id))
-    Future {tlst map (v => Tag(v.getProperty("tag"),None)) toList}
+    val tagVertices = graph.getVerticesOfClass("Tags").asScala
+    val tagList = tagVertices.map(v => Tag(v.getProperty("tag"),None)).toList
+    tagList
+  }
+
+  override def remove(e: Tag): Future[Boolean] = Future {
+    val graph = Odb.factory.getTx
+    val tagVertices = graph.getVertices("Tags.tag",e.flatten).asScala
+    if(tagVertices.isEmpty) throw new Exception("Tag not found: "+e.flatten)
+    tagVertices.head.remove()
+    graph.commit()
+    true
+  }
+
+  override def save(e: Tag, upsert: Boolean = false): Future[Boolean] = Future {
+    val graph = Odb.factory.getTx
+    val v = graph.getVertices("Tags.tag",e.flatten).asScala
+    if(v.nonEmpty) {
+      if (upsert)
+        v.head.setProperty("tag", e.flatten)
+      else
+        throw new Exception("Element already in database")
+    } else {
+      val tagVertex = graph.addVertex("Tags", null)
+      tagVertex.setProperty("tag", e.flatten)
+    }
+    graph.commit()
+    true
+  }
+
+  override def find(id: String): Future[Tag] = Future {
+    val graph = Odb.factory.getNoTx
+    val tagVertices = graph.getVertices("Tags.tag",id).asScala
+    if(tagVertices.isEmpty) throw new Exception("Tag not found: "+id)
+    Tag(tagVertices.head.getProperty("tag"),None)
   }
 }
