@@ -35,8 +35,6 @@ object  RequestsOdb extends RequestsDao {
     Future{count}
   }
 
-}
-
   override  def save(e: Request, upsert: Boolean = false) : Future[Boolean] = {
     val graph = Odb.factory.getTx
     val requestVertex = graph.addVertex("Requests", null)
@@ -139,9 +137,6 @@ object  RequestsOdb extends RequestsDao {
         }
     }
   }
-
-
-
 
 }
 
