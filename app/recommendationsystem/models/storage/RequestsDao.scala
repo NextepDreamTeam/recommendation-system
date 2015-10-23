@@ -36,44 +36,51 @@ object  RequestsOdb extends RequestsDao {
   }
 
   override  def save(e: Request, upsert: Boolean = false) : Future[Boolean] = {
-    val graph = Odb.factory.getTx
-    val requestVertex = graph.addVertex("Requests", null)
-    requestVertex.setProperty("reqid", e.id)
-    requestVertex.setProperty("date", e.date)
-    graph.commit()
-    val usersVertex = graph.getVertices("Users.uid", e.user.id).asScala
-    if(usersVertex.isEmpty)
-      throw NothingThereException("User not found in database")
-    val userVertex = usersVertex.head
-    graph.addEdge(null, requestVertex, userVertex, "RequestUser")
-    graph.commit()
+    synchronized {
+      val graph = Odb.factory.getTx
+      val requestVertex = graph.addVertex("Requests", null)
+      requestVertex.setProperty("reqid", e.id)
+      requestVertex.setProperty("date", e.date)
+      val ruid = e.user.id
+      val usersVertex = graph.getVertices("Users.uid", e.user.id).asScala
+      if (usersVertex.isEmpty)
+        throw NothingThereException("User not found in database")
+      val userVertex = usersVertex.head
+      graph.addEdge(null, requestVertex, userVertex, "RequestUser")
 
-    e.tags match {
-      case Some(tagList) => {
-        tagList map
-          (
-            t => {
-              val tagVertex = graph.getVertices("Tags.tag", t.flatten).asScala.head
-              graph.addEdge(null, requestVertex, tagVertex, "RequestHoldTag")
-            }
-            )
+      e.tags match {
+        case Some(tagList) => {
+          tagList map
+            (
+              t => {
+                val tagVertex = graph.getVertices("Tags.tag", t.flatten).asScala.head
+                graph.addEdge(null, requestVertex, tagVertex, "RequestHoldTag")
+              }
+              )
+        }
+      }
+      graph.commit()
+      graph.shutdown()
+      Future {
+        true
       }
     }
-    graph.commit()
-    graph.shutdown()
-    Future{true}
   }
 
   override def remove(e: Request) : Future[Boolean] = {
-    val graph = Odb.factory.getTx
-    val requestsVertex = graph.getVertices("Requests.reqid", e.id).asScala
-    if(requestsVertex.isEmpty)
-      throw NothingThereException("Request not found in database")
-    val requestVertex = requestsVertex.head
-    graph.removeVertex(requestVertex)
-    graph.commit()
-    graph.shutdown()
-    Future{true}
+    synchronized {
+      val graph = Odb.factory.getTx
+      val requestsVertex = graph.getVertices("Requests.reqid", e.id).asScala
+      if (requestsVertex.isEmpty)
+        throw NothingThereException("Request not found in database")
+      val requestVertex = requestsVertex.head
+      graph.removeVertex(requestVertex)
+      graph.commit()
+      graph.shutdown()
+      Future {
+        true
+      }
+    }
   }
 
   override  def all : Future[List[Request]] = {
@@ -120,21 +127,21 @@ object  RequestsOdb extends RequestsDao {
       val requestTagEdgeList = requestVertice.getEdges(Direction.OUT, "RequestHoldTag").asScala.map(
         ta => ta.getVertex(Direction.OUT))
 
-        val output = requestTagEdgeList map (rt => (rt.getProperty("tag"))) toList
+      val output = requestTagEdgeList map (rt => (rt.getProperty("tag"))) toList
 
-        val userVertex = requestVertice.getEdges(Direction.OUT, "RequestUser").asScala.map(
+      val userVertex = requestVertice.getEdges(Direction.OUT, "RequestUser").asScala.map(
           v => v.getVertex(Direction.OUT)).head
-        val requestUserTagsVertex = userVertex.getEdges(Direction.OUT, "HoldsTag").asScala
-        val userTagsVertex = requestUserTagsVertex map (
-          e => e.getVertex(Direction.OUT))
-        val tagList = requestUserTagsVertex zip userTagsVertex map (
-          x => (x._2.getProperty("tag"), x._1.getProperty("weight"), x._1.getProperty("lastInsert"))) toList
-        val user = User(userVertex.getProperty("uid"), userVertex.getProperty("email"), None, Option(tagList))
+      val requestUserTagsVertex = userVertex.getEdges(Direction.OUT, "HoldsTag").asScala
+      val userTagsVertex = requestUserTagsVertex map (
+        e => e.getVertex(Direction.OUT))
+      val tagList = requestUserTagsVertex zip userTagsVertex map (
+        x => (x._2.getProperty("tag"), x._1.getProperty("weight"), x._1.getProperty("lastInsert"))) toList
+      val user = User(userVertex.getProperty("uid"), userVertex.getProperty("email"), None, Option(tagList))
 
-        val request = Request(requestVertice.getProperty("reqid"), user, Option(output), None, requestVertice.getProperty("date"))
-        Future {
-          Option(request)
-        }
+      val request = Request(requestVertice.getProperty("reqid"), user, Option(output), None, requestVertice.getProperty("date"))
+      Future {
+        Option(request)
+      }
     }
   }
 
