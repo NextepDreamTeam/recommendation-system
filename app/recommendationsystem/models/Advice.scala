@@ -1,4 +1,4 @@
-/*package recommendationsystem.models
+package recommendationsystem.models
 
 import play.api.libs.functional._
 import play.api.libs.json._
@@ -50,4 +50,3 @@ object Advices extends AdvicesDao {
 
   override def find(id: String): Future[Option[Advice]] = AdvicesOdb.find(id)
 }
-*/
