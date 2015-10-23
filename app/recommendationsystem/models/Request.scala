@@ -1,8 +1,4 @@
-/*package recommendationsystem.models
-
-import recommendationsystem.models.storage.MongoObj
-import recommendationsystem._
-import play.api.libs.functional._
+package recommendationsystem.models
 
 case class Request(
   id: String,
@@ -20,7 +16,7 @@ case class Request(
       Request(id, User(user.id, oldUser.email), tags, mandatoryTags, date)
   }
 }
-
+/*
 object Request{
 
   implicit val requestFormat = formatters.json.RequestFormatters.storageFormatter
