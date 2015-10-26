@@ -43,7 +43,7 @@ object Tag {
     //    Some(a)
   }
 
-  //implicit val tagFormatter = recommendationsystem.formatters.json.TagFormatters.storageFormatter
+  implicit val tagFormatter = recommendationsystem.formatters.json.TagFormatters.storageFormatter
 
 }
 
@@ -64,7 +64,7 @@ object Tags extends TagsDao {
 
 }
 
-/*
+
 /**
  * Class that represents a tag in a REST request.
  * @constructor Construct a RestTag object.
@@ -82,4 +82,4 @@ object RestTag {
    * The converter from a JsValue to a RestTag object.
    */
   implicit val tagReader = Json.reads[RestTag]
-}*/
+}

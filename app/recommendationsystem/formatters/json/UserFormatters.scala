@@ -1,10 +1,9 @@
-/*package recommendationsystem.formatters.json
+package recommendationsystem.formatters.json
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import recommendationsystem.models._
-import play.api.data.validation.ValidationError
 
 object UserFormatters {
 
@@ -65,4 +64,4 @@ object UserFormatters {
   }
 
 }
-*/
+

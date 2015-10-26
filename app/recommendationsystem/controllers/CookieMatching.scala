@@ -1,4 +1,4 @@
-/*package recommendationsystem.controllers
+package recommendationsystem.controllers
 
 import play.api._
 import play.api.Play.current
@@ -23,4 +23,3 @@ object CookieMatching extends Controller {
   }
 
 }
-*/

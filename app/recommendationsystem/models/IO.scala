@@ -1,4 +1,4 @@
-/*package recommendationsystem.models
+package recommendationsystem.models
 
 /**
  * This classes represents the input and output of service 
@@ -61,4 +61,3 @@ case class Range (
 object Range {
   implicit val storageFormatters = recommendationsystem.formatters.json.InputFormatters
 }*/
-*/

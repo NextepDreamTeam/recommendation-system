@@ -1,4 +1,4 @@
-/*package recommendationsystem.controllers
+package recommendationsystem.controllers
 
 import play.api._
 import play.api.mvc._
@@ -26,7 +26,7 @@ import scala.util.{Failure, Success}
  * @author Alberto Adami
  */
 object BridgeController extends Controller {
-  /*
+/*
   /**
    * Method that search all the user that match the given tags.
    * The list of tags are passed in json like the following: {"tags": [{"tag": "cat1:attri1:"}, {"tag": "cat2:attr1"}]}
@@ -40,10 +40,10 @@ object BridgeController extends Controller {
     def findUsers(tags: List[String]): Future[Option[List[User]]] = {
       val jsonTags = for(tag <- tags) yield Json.obj("tags.tag" -> tag) //create the array of tags
       val query = Json.obj("$and" -> jsonTags)
-      Users.find(query).toList flatMap { users => 
+      print(query)
+      Users.find(query).toList flatMap { users =>
         Future{if(users.size > 0) Some(users) else None}
       }
-      
     }
     //get the json value
     val jsonObject = request.body.asJson
@@ -63,8 +63,8 @@ object BridgeController extends Controller {
       		}
       case None => Future{BadRequest("Need json")} // no json object given
     }
-  }*/
-
+  }
+*/
   /**
    * Method that has the goal to add a new Tag on the "recommendation.tags"
    * The data are passed in a json value like the following: {"category": "c1", "attr": "a1"}.
@@ -75,7 +75,7 @@ object BridgeController extends Controller {
    *         BadRequest - the insert was not completed successful because the json was bad formed.
    *         InternalServerError - the insert was not completed successful because the Server cannot access to the MongoDB instance.
    */
-  def addTag = CorsAction.async { request =>
+  def addTag() = CorsAction.async { request =>
 
     def insertTagOnTheDB(tag: Tag): Future[Boolean] = {
       Tags.save(tag, upsert = true) onComplete {
@@ -136,21 +136,23 @@ object BridgeController extends Controller {
      * BadRequest - the json was bad formed and the insert was not complete successful.
      * InternalServerError - the Server cannot access to the MongoDB instance.
      **/
-  def addUser = CorsAction.async { request =>
+  def addUser() = CorsAction.async { request =>
     val jsonData = request.body.asJson
     jsonData match {
-        case Some(x) => val userId = x \ "id" get; val userEmail = x \ "email" get;
-        				(userId, userEmail) match {
-        				  case (id: JsString, email: JsString) => 
-        				   		val user = new User(id.as[String], Some(email.as[String])) //create a user Instance
-        				   		addUserToDb(user).flatMap{status => status match {
-	        				   		  case true => Future{Ok} //the insert was complete successful
-	        				   		  case _ => Future{InternalServerError("Cannot access to the db now")} //the db returns an error on the insert.
-                        }
-                      }
-        				  case (_, _) => Future{BadRequest("json bad formed")} //the json is bad formed
-        				}
-        case None => Future{BadRequest("Need a json value")} //need a json value
+      case Some(x) =>
+        val userId = x \ "id" get;
+        val userEmail = x \ "email" get;
+        (userId, userEmail) match {
+          case (id: JsString, email: JsString) =>
+            val user = new User(id.as[String], Some(email.as[String])) //create a user Instance
+            addUserToDb(user).flatMap{status => status match {
+              case true => Future{Ok} //the insert was complete successful
+              case _ => Future{InternalServerError("Cannot access to the db now")} //the db returns an error on the insert.
+            }
+            }
+          case (_, _) => Future{BadRequest("json bad formed")} //the json is bad formed
+        }
+      case None => Future{BadRequest("Need a json value")} //need a json value
     }
   }
 
@@ -162,7 +164,7 @@ object BridgeController extends Controller {
     *  Ok - the insert was completed successful.
     * BadRequest - the insert was not completed successful. 
     */
-   def addTagToUser = CorsAction.async { request =>
+   def addTagToUser() = CorsAction.async { request =>
      implicit val userRestFormat = UserFormatters.restFormatter
      implicit val inputFormat = InputFormatters.restFormatter
      implicit val outputWriter = OutputFormatters.restWriter
@@ -180,9 +182,11 @@ object BridgeController extends Controller {
          case Success(futureUser) => {
            futureUser match {
              case Some(u) => {
-               val updatedUser = input.tags.map { listTag =>
+               u.tags map (t => println(t))
+               val updatedUser = user.merge(u) /*input.tags.map { listTag =>
                  user.merge(u.addTags(listTag))
-               }.getOrElse(user.merge(u))
+               }.getOrElse(user.merge(u))*/
+               user.merge(u).tags.get map (t => println(t._1))
                Users.update(updatedUser)
              }
              case None => Future{false} //user doesn't exists
@@ -205,4 +209,3 @@ object BridgeController extends Controller {
      }
    }
 }
-*/

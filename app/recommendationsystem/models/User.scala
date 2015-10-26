@@ -3,12 +3,11 @@ package recommendationsystem.models
 
 import play.api.libs.json._
 import recommendationsystem.models.storage.{UsersOdb, UsersDao}
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-case class Anag(
-                 name: String,
-                 lastName: String)
+case class Anag(name: String, lastName: String)
 
 object Anag {
   implicit val anagFormat = Json.format[Anag]
@@ -70,7 +69,7 @@ case class User(
 /** Companion object for class User */
 object User {
 
-  //implicit val userFormat: Format[User] = recommendationsystem.formatters.json.UserFormatters.storageFormatter
+  implicit val userFormat: Format[User] = recommendationsystem.formatters.json.UserFormatters.storageFormatter
 
   def applyWithToken(id: String, _email: Option[String] = None, token: Option[String], anag: Option[Anag] = None, tags: Option[List[(Tag, Double, Long)]] = None) = {
     val email = _email.orElse(token)
@@ -78,7 +77,7 @@ object User {
   }
 
 }
-/*
+
 
  // Companion object for manage class User, contains utility method and databases access method
 
@@ -86,20 +85,19 @@ object Users extends UsersDao {
 /**
    * Update tags weights of user
    *
-   * @param u User that tags have to be updated
+   * @param user User that tags have to be updated
    * @return a Future with new user updated
    */
-  //  def updateWeight(user: User): Future[User] = {
-  //    import play.api.libs.json._
-  //    val futureUsers = this.find(Json.obj("id" -> user.id))()
-  //    val futureUser = futureUsers.map(users => users.head)
-  //    futureUser.map { u =>
-  //      u.tags match {
-  //        case Some(t) => u.addTags(t.map(t => (t._1)))
-  //        case None => u
-  //      }
-  //    }
-  //  }
+    def updateWeight(user: User): Future[User] = {
+      val futureUsers = this.find(user.id)
+      val futureUser = futureUsers.map(users => users.head)
+      futureUser.map { u =>
+        u.tags match {
+          case Some(t) => u.addTags(t.map(t => t._1))
+          case None => u
+        }
+      }
+    }
 
   override def count: Future[Long] = UsersOdb.count
 
@@ -115,4 +113,3 @@ object Users extends UsersDao {
 }
 
 
-*/

@@ -16,9 +16,9 @@
 #POST           /tag/users                              recommendationsystem.controllers.BridgeController.userMatchingTag
 
 # Insert on the DB
-#POST           /tag/new                                recommendationsystem.controllers.BridgeController.addTag
-#POST           /user/new                               recommendationsystem.controllers.BridgeController.addUser
-#POST           /user/update                            recommendationsystem.controllers.BridgeController.addTagToUser
+POST           /tag/new                                recommendationsystem.controllers.BridgeController.addTag
+POST           /user/new                               recommendationsystem.controllers.BridgeController.addUser
+POST           /user/update                            recommendationsystem.controllers.BridgeController.addTagToUser
 
 # Cookie matching
 
