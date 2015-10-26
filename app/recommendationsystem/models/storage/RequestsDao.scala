@@ -1,6 +1,6 @@
 package recommendationsystem.models.storage
 
-import _root_.recommendationsystem.models.{Request, User}
+import _root_.recommendationsystem.models.{Tag, Request, User}
 import com.tinkerpop.blueprints.{Direction, Vertex}
 
 import scala.collection.JavaConverters._
@@ -58,6 +58,7 @@ object  RequestsOdb extends RequestsDao {
               }
               )
         }
+        case None =>
       }
       graph.commit()
       graph.shutdown()
@@ -90,8 +91,8 @@ object  RequestsOdb extends RequestsDao {
     val requestList = requestListVertex map(requestVertex => {
 
       val requestHoldTagVertex = requestVertex.getEdges(Direction.OUT, "RequestHoldTag").asScala.map(
-        v => v.getVertex(Direction.OUT))
-      val output = requestHoldTagVertex map( x => (x.getProperty("tag"))) toList
+        v => v.getVertex(Direction.IN))
+      val output = requestHoldTagVertex map( x => Tag(x.getProperty("tag"), None)) toList
 
       //user info
       val requestUserEdge = requestVertex.getEdges(Direction.OUT, "RequestUser").asScala.map(
@@ -124,13 +125,8 @@ object  RequestsOdb extends RequestsDao {
     else {
       val requestVertice = requestVertices.head
 
-      val requestTagEdgeList = requestVertice.getEdges(Direction.OUT, "RequestHoldTag").asScala.map(
-        ta => ta.getVertex(Direction.OUT))
-
-      val output = requestTagEdgeList map (rt => (rt.getProperty("tag"))) toList
-
       val userVertex = requestVertice.getEdges(Direction.OUT, "RequestUser").asScala.map(
-          v => v.getVertex(Direction.OUT)).head
+        v => v.getVertex(Direction.OUT)).head
       val requestUserTagsVertex = userVertex.getEdges(Direction.OUT, "HoldsTag").asScala
       val userTagsVertex = requestUserTagsVertex map (
         e => e.getVertex(Direction.OUT))
@@ -138,7 +134,19 @@ object  RequestsOdb extends RequestsDao {
         x => (x._2.getProperty("tag"), x._1.getProperty("weight"), x._1.getProperty("lastInsert"))) toList
       val user = User(userVertex.getProperty("uid"), userVertex.getProperty("email"), None, Option(tagList))
 
-      val request = Request(requestVertice.getProperty("reqid"), user, Option(output), None, requestVertice.getProperty("date"))
+      val requestTagEdgeList = requestVertice.getEdges(Direction.OUT, "RequestHoldTag").asScala.map(
+        ta => ta.getVertex(Direction.IN))
+
+      val outputTagList = requestTagEdgeList map (rt => Tag(rt.getProperty("tag"),None))
+      val output = Option(outputTagList.toList)
+
+      val request = Request(
+        requestVertice.getProperty("reqid"),
+        user,
+        output ,
+        None,
+        requestVertice.getProperty("date"))
+
       Future {
         Option(request)
       }

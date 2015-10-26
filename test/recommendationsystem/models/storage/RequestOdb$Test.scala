@@ -25,14 +25,14 @@ class RequestsOdb$Test extends FunSuite with BeforeAndAfterEach {
     val request1 = Request(
       "req1",
       user1,
-      Option((t2) :: List()),
+      Option((t1) :: (t2) :: List()),
       None,
       Calendar.getInstance().getTimeInMillis
     )
     val request2 = Request(
       "req2",
       user2,
-      Option((t2) :: List()),
+      Option((t1) :: (t2) :: List()),
       None,
       Calendar.getInstance().getTimeInMillis
     )
@@ -51,10 +51,24 @@ class RequestsOdb$Test extends FunSuite with BeforeAndAfterEach {
     Await.result(addU2,Duration(3,TimeUnit.SECONDS))
   }
 
-  override def afterEach(): Unit = {
+  override def afterEach() {
     Odb.clearDb
   }
 
+  test("RequestsOdb.find invoked"){
+    val addR1 = RequestsOdb.save(request1)
+    Await.result(addR1,Duration(3,TimeUnit.SECONDS))
+    val addR2 = RequestsOdb.save(request2)
+    Await.result(addR2,Duration(3,TimeUnit.SECONDS))
+    val fres = RequestsOdb.find("req2")
+    fres onComplete{
+      case Success(o) => o match {
+        case Some(x) => Odb.clearDb; assert (true)
+        case None => Odb.clearDb; assert(false)
+      }
+    }
+    Await.result(fres,Duration(3,TimeUnit.SECONDS))
+  }
 
 /*
   test("RequestOdb save count remove invoked"){
@@ -68,6 +82,7 @@ class RequestsOdb$Test extends FunSuite with BeforeAndAfterEach {
       case Failure(t) => println("An error has occured: " + t.getMessage)
     }
     Await.result(fresCount,Duration(3,TimeUnit.SECONDS))
+
   }
 */
 /*
@@ -82,22 +97,9 @@ class RequestsOdb$Test extends FunSuite with BeforeAndAfterEach {
       case Failure(t) => println("An error has occured: " + t.getMessage)
     }
     Await.result(fresAll,Duration(3,TimeUnit.SECONDS))
-  }
 
-*/
-  test("RequestsOdb.find invoked"){
-    val addR1 = RequestsOdb.save(request1)
-    Await.result(addR1,Duration(3,TimeUnit.SECONDS))
-    val addR2 = RequestsOdb.save(request2)
-    Await.result(addR2,Duration(3,TimeUnit.SECONDS))
-    val fres = RequestsOdb.find("req2")
-    fres onComplete{
-      case Success(o) => o match {
-        case Some(x) => assert (true)
-        case None => assert(false)
-      }
-    }
-    Await.result(fres,Duration(3,TimeUnit.SECONDS))
+    Odb.clearDb
   }
+  */
 
 }
