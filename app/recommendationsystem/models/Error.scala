@@ -1,4 +1,4 @@
-/*package recommendationsystem.models
+package recommendationsystem.models
 
 import play.api.http.Status
 
@@ -32,4 +32,3 @@ object ValidationError {
   }
 
 }
-*/

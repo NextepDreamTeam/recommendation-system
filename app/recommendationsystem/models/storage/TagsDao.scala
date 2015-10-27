@@ -1,5 +1,8 @@
 package recommendationsystem.models.storage
 
+import com.orientechnologies.orient.core.sql.OCommandSQL
+import com.tinkerpop.blueprints.Vertex
+import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
 import recommendationsystem.models.Tag
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -20,7 +23,7 @@ trait TagsDao {
 
   def all: Future[List[Tag]]
 
-  def find(id: String): Future[Tag]
+  def find(query: String): Future[List[Tag]]
 }
 
 
@@ -73,10 +76,14 @@ object TagsOdb extends TagsDao {
     true
   }}
 
-  override def find(id: String): Future[Tag] = Future {
+  override def find(query: String): Future[List[Tag]] = Future {
     val graph = Odb.factory.getNoTx
-    val tagVertices = graph.getVertices("Tags.tag",id).asScala
-    if(tagVertices.isEmpty) throw new Exception("Tag not found: "+id)
-    Tag(tagVertices.head.getProperty("tag"),None)
+    val res: OrientDynaElementIterable = graph.command(new OCommandSQL(query)).execute()
+    val ridTags: Iterable[Vertex] = res.asScala.asInstanceOf[Iterable[Vertex]]
+    def getTag(rid: AnyRef): Tag = {
+      val tagVertex = graph.getVertex(rid)
+      Tag(tagVertex.getProperty("tag"),None)
+    }
+    ridTags.map(r => getTag(r)).toList
   }
 }
