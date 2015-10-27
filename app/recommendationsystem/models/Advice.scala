@@ -48,5 +48,5 @@ object Advices extends AdvicesDao {
 
   override def save(e: Advice, upsert: Boolean): Future[Boolean] = AdvicesOdb.save(e,upsert)
 
-  override def find(id: String): Future[Option[Advice]] = AdvicesOdb.find(id)
+  override def find(query: String): Future[List[Advice]] = AdvicesOdb.find(query)
 }

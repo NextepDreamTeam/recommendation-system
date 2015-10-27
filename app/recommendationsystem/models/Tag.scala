@@ -50,17 +50,17 @@ object Tag {
 
 object Tags extends TagsDao {
 
-  def count: Future[Long] = Tags count
+  def count: Future[Long] = Tags.count
 
-  def save(tag: Tag, upsert: Boolean = false): Future[Boolean] = TagsOdb save(tag,upsert)
+  def save(tag: Tag, upsert: Boolean = false): Future[Boolean] = TagsOdb.save(tag,upsert)
 
-  def update(newTag: Tag, oldTag: Tag): Future[Boolean] = TagsOdb update(newTag,oldTag)
+  def update(newTag: Tag, oldTag: Tag): Future[Boolean] = TagsOdb.update(newTag,oldTag)
 
-  def remove(tag: Tag): Future[Boolean] = TagsOdb remove tag
+  def remove(tag: Tag): Future[Boolean] = TagsOdb.remove(tag)
 
-  def all: Future[List[Tag]] = TagsOdb all
+  def all: Future[List[Tag]] = TagsOdb.all
 
-  def find(idTag: String): Future[Tag] = TagsOdb find idTag
+  def find(query: String): Future[List[Tag]] = TagsOdb.find(query)
 
 }
 
