@@ -1,6 +1,9 @@
 package recommendationsystem.models.storage
 
+import _root_.recommendationsystem.models.Advice
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
+import com.orientechnologies.orient.core.sql.OCommandSQL
+import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
 import com.tinkerpop.blueprints.{Direction, Vertex}
 import recommendationsystem.models.{Tag, User, Advice}
 
@@ -154,18 +157,18 @@ object AdvicesOdb extends AdvicesDao {
   }
   }
 
-  override def find(id: String): Future[Option[Advice]] = Future {
+  override def find(query: String): Future[List[Advice]] = Future {
     val graph = Odb.factory.getNoTx
-    val adviceVertices = graph.getVertices("Advices.aid",id).asScala
-    if(adviceVertices.isEmpty)
-      None
-    else {
-      val adviceVertex = adviceVertices.head //must be one
-      val userVertex = adviceVertex.getEdges(Direction.OUT,"AdviceUser").asScala
-          .map(v => v.getVertex(Direction.OUT)).head
-      val tagsAdviceVertex = adviceVertex.getEdges(Direction.OUT,"AdviceOutput").asScala
+    val res: OrientDynaElementIterable = graph.command(new OCommandSQL(query)).execute()
+    val ridAdvices: Iterable[Vertex] = res.asScala.asInstanceOf[Iterable[Vertex]]
+
+    def getAdvice(rid: AnyRef): Advice = {
+      val adviceVertex = graph.getVertex(rid)
+      val userVertex = adviceVertex.getEdges(Direction.OUT, "AdviceUser").asScala
+        .map(v => v.getVertex(Direction.OUT)).head
+      val tagsAdviceVertex = adviceVertex.getEdges(Direction.OUT, "AdviceOutput").asScala
         .map(v => v.getVertex(Direction.OUT))
-      val output = tagsAdviceVertex map (x => (x.getProperty("tag"),0D)) toList
+      val output = tagsAdviceVertex map (x => (x.getProperty("tag"), 0D)) toList
       val advice = Advice(
         adviceVertex.getProperty("aid"),
         userVertex.getProperty("uid"),
@@ -174,7 +177,8 @@ object AdvicesOdb extends AdvicesDao {
         adviceVertex.getProperty("clicked"),
         adviceVertex.getProperty("type")
       )
-      Option(advice)
     }
+    ridAdvices.map(rid => getAdvice(rid.getId)).toList
   }
+
 }

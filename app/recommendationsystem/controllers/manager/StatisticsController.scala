@@ -1,4 +1,4 @@
-/*package recommendationsystem.controllers.manager
+package recommendationsystem.controllers.manager
 
 import play.api.libs.json
 import play.api.libs.json._
@@ -6,6 +6,7 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import recommendationsystem.models._
+import recommendationsystem.models.storage.AdvicesOdb
 import scala.concurrent._
 import ExecutionContext.Implicits.global
 
@@ -42,11 +43,15 @@ class StatisticsController extends Controller{
    */
   private def calculateMax: Future[Option[(String, Int)]] = {
     //get all the Tags presents in the db.
-    Tags.all.toList flatMap { case tags =>
+    Tags.all flatMap { case tags =>
       val xs = tags map { case tag =>
         val tagName = tag.category  + ":" + tag.attr //create the String representation of the Tag.
-        //Search all the document where tags.tag == tagName and for each document return a tuple (tag, number).
-        Requests.find(Json.obj("tags.tag" -> tagName)).toList.map (requests => (tagName, requests.size) )
+      //Search all the document where tags.tag == tagName and for each document return a tuple (tag, number).
+      val query =
+        "select from Requests " +
+          "where outE(\"RequestsHoldsTag\").inV(\"Tag\") IN " +
+          "(select from Tags where tag in "+Json.toJson(tagName).toString()+" )"
+        Requests.find(query).map (requests => (tagName, requests.size) )
       }
       val f = Future.sequence(xs)//transforms a List[Future[(String, Int)]] to Future[List[(String, Int)]]
       f.map { case ys =>
@@ -63,6 +68,7 @@ class StatisticsController extends Controller{
 
     }
   }
+
 
   /**
    * Method that search the most used tag.
@@ -95,8 +101,9 @@ class StatisticsController extends Controller{
    * @return A Future containing a List[Advice] object.
    */
   private def clickedAdvices: Future[List[Advice]] = {
-    val query = Json.obj("clicked" -> true)
-    Advices.find(query).toList
+    val query : String = "Select from Advices where clicked='true'"
+    //val query = Json.obj("clicked" -> true)3
+    AdvicesOdb.find(query)
   }
 
   /**
@@ -130,9 +137,12 @@ class StatisticsController extends Controller{
    * c - is the number of click in the range.
    */
   private def calculateStatisticsOnRange(range: Range): Future[(Double, Int)] = {
+    val query : String = "select from Requests where date>="+range.startDate+" and date<="+range.finishDate
+    /*
     val gte = Json.obj("date" -> Json.obj("$gte" -> range.startDate))//check all the dates that are >= startDate
     val lte = Json.obj("date" -> Json.obj("$lte" -> range.finishDate))//check all the dates that are <= finishDate
     val query = Json.obj("$and" -> Json.arr(gte, lte))//the query object in json
+    */
     Requests.find(query).toList flatMap {results => //callback on the find on the db
       if(results.size > 0) { //at least one document match the query
       val checkCondition = Json.obj("clicked" -> true) //condition on the clicked advice
@@ -406,4 +416,3 @@ class StatisticsController extends Controller{
   }
 
 }
-*/
