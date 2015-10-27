@@ -1,5 +1,9 @@
 package recommendationsystem.models
 
+import recommendationsystem.models.storage.{RequestsOdb, RequestsDao}
+
+import scala.concurrent.Future
+
 case class Request(
   id: String,
   user: User,
@@ -16,14 +20,23 @@ case class Request(
       Request(id, User(user.id, oldUser.email), tags, mandatoryTags, date)
   }
 }
-/*
+
 object Request{
 
-  implicit val requestFormat = formatters.json.RequestFormatters.storageFormatter
+  //implicit val requestFormat = formatters.json.RequestFormatters.storageFormatter
 }
 
-object Requests extends MongoObj[Request] {
-  val collectionName = "requests"//"recommendation.requests"
-  implicit val storageFormat = formatters.json.RequestFormatters.storageFormatter
+object Requests extends RequestsDao {
+
+  //implicit val storageFormat = formatters.json.RequestFormatters.storageFormatter
+
+  override def count: Future[Long] = RequestsOdb.count
+
+  override def all: Future[List[Request]] = RequestsOdb.all
+
+  override def remove(e: Request): Future[Boolean] = RequestsOdb.remove(e)
+
+  override def save(e: Request, upsert: Boolean): Future[Boolean] = RequestsOdb.save(e,upsert)
+
+  override def find(query: String): Future[List[Request]] = Requests.find(query)
 }
-*/
