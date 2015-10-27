@@ -1,6 +1,8 @@
 package recommendationsystem.models.storage
 
-import recommendationsystem.models.User
+import com.orientechnologies.orient.core.sql.OCommandSQL
+import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
+import recommendationsystem.models.{Tag, User}
 import com.tinkerpop.blueprints._
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -20,7 +22,7 @@ trait UsersDao {
 
   def all: Future[List[User]]
 
-  def find(id: String): Future[Option[User]]
+  def find(query: String): Future[List[User]]
 
 }
 
@@ -82,19 +84,22 @@ object UsersOdb extends UsersDao {
     usersList
   }
 
-  override def find(id: String): Future[Option[User]] = Future {
+  override def find(query: String): Future[List[User]] = Future {
     val graph = Odb.factory.getNoTx
-    val usersListVertex = graph.getVertices("Users.uid", id) .asScala.toList
-    usersListVertex match {
-      case userVertex :: xs =>
-        val userTagsEdge = userVertex.getEdges(Direction.OUT,"HoldsTag").asScala
-        val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.OUT))
-        val tagList = userTagsEdge zip userTagsVertex map
-          (x => (x._2.getProperty("tag"),x._1.getProperty("weight"),x._1.getProperty("lastInsert"))) toList;
-        Option(User(userVertex.getProperty("uid"),Option(userVertex.getProperty("email")),None,Option(tagList)))
-      case Nil => None
+    val res: OrientDynaElementIterable = graph.command(new OCommandSQL(query)).execute()
+    val ridUsers: Iterable[Vertex] = res.asScala.asInstanceOf[Iterable[Vertex]]
+
+    def getUser(rid: AnyRef): User = {
+      val userVertex = graph.getVertex(rid)
+      val userTagsEdge = userVertex.getEdges(Direction.OUT, "HoldsTag").asScala
+      val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.IN))
+      val tagList = userTagsEdge zip userTagsVertex map
+        (x => (Tag(x._2.getProperty("tag"), None), x._1.getProperty("weight"), x._1.getProperty("lastInsert"))) toList;
+      User(userVertex.getProperty("uid"), Option(userVertex.getProperty("email")), None, Option(tagList))
+      }
+
+      ridUsers.map(rid => getUser(rid.getId)).toList
     }
-  }
 
   override def update(e: User): Future[Boolean] = Future {
     synchronized {
@@ -141,4 +146,19 @@ object UsersOdb extends UsersDao {
       }
     }
   }
+
+  /*def provaFind() = {
+    val t = "taggone:tre"
+    val graph = Odb.factory.getNoTx
+    val res: OrientDynaElementIterable = graph.command(
+      new OCommandSQL(
+        "select from Users where outE(\"HoldsTag\").inV(\"Tag\") IN (select from Tags where tag=\""+t+"\")"
+      )
+    ).execute()
+    val asd: Iterable[Vertex] = res.asScala.asInstanceOf[Iterable[Vertex]]
+    //asd map (a => println(a))
+    asd map (v => println(v.getId))
+    //println(asd.size)
+    //asd map ( a => println(a.getProperty("uid")))
+  }*/
 }

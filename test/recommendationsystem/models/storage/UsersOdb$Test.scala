@@ -18,13 +18,13 @@ class UsersOdb$Test extends FunSuite with BeforeAndAfterEach {
   val tagTest = Tag("tag","test")
 
   override def beforeEach() {
-    Odb.clearDb
-    val add = TagsOdb.save(tagTest)
-    Await.result(add,Duration(3,TimeUnit.SECONDS))
+    //Odb.clearDb
+    //val add = TagsOdb.save(tagTest)
+    //Await.result(add,Duration(3,TimeUnit.SECONDS))
   }
 
   override def afterEach() {
-    Odb.clearDb
+    //Odb.clearDb
   }
 
   test("UsersOdb.count method invoked") {
@@ -92,6 +92,11 @@ class UsersOdb$Test extends FunSuite with BeforeAndAfterEach {
     }
     Await.result(update,Duration(3,TimeUnit.SECONDS))
   }
+
+  /*test("provaFind is invoked") {
+    UsersOdb.provaFind()
+    assert(true)
+  }*/
 
 }
 

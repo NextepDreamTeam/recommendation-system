@@ -107,7 +107,7 @@ object Users extends UsersDao {
 
   override def save(e: User, upsert: Boolean): Future[Boolean] = UsersOdb.save(e,upsert)
 
-  override def find(id: String): Future[Option[User]] = UsersOdb.find(id)
+  override def find(query: String): Future[List[User]] = UsersOdb.find(query)
 
   override def update(e: User): Future[Boolean] = UsersOdb.update(e)
 }

@@ -26,7 +26,7 @@ import scala.util.{Failure, Success}
  * @author Alberto Adami
  */
 object BridgeController extends Controller {
-/*
+
   /**
    * Method that search all the user that match the given tags.
    * The list of tags are passed in json like the following: {"tags": [{"tag": "cat1:attri1:"}, {"tag": "cat2:attr1"}]}
@@ -38,11 +38,10 @@ object BridgeController extends Controller {
   def userMatchingTag = CorsAction.async { request =>
     //Get all the User that match the List of given Tags
     def findUsers(tags: List[String]): Future[Option[List[User]]] = {
-      val jsonTags = for(tag <- tags) yield Json.obj("tags.tag" -> tag) //create the array of tags
-      val query = Json.obj("$and" -> jsonTags)
-      print(query)
-      Users.find(query).toList flatMap { users =>
-        Future{if(users.size > 0) Some(users) else None}
+      var query = "select from Users where outE(\"HoldsTag\").inV(\"Tag\") IN (select from Tags where tag in "
+      query= query + Json.toJson(tags).toString() + " )"
+      Users.find(query) flatMap { users =>
+        Future{if(users.nonEmpty) Some(users) else None}
       }
     }
     //get the json value
@@ -64,7 +63,7 @@ object BridgeController extends Controller {
       case None => Future{BadRequest("Need json")} // no json object given
     }
   }
-*/
+
   /**
    * Method that has the goal to add a new Tag on the "recommendation.tags"
    * The data are passed in a json value like the following: {"category": "c1", "attr": "a1"}.
@@ -116,14 +115,10 @@ object BridgeController extends Controller {
    * false indicates that the insert was not completed successful (db error).
    **/
   private def addUserToDb(user: User): Future[Boolean] = {
-    Users.find(user.id) onComplete {
-      case Success(o) => o match {
-        case Some(x) => Future(true)
-        case None => Users.save(user)
-      }
-      case Failure(t) => Future(false)
-    }
-    Future(true)
+    val query = "select from Users where uid = \""+user.id+"\" "
+    Users.find(query).flatMap(usrList =>
+      if (usrList.isEmpty) Future(false) else Users.save(user)
+    )
   }
 
   
@@ -157,7 +152,8 @@ object BridgeController extends Controller {
   }
 
    /** Method that add a Tag on the user document.
-    * The data are passed in a json value like the following: {"user": {"id": "myid", "email": "myemail@example.it"}, "tags": [{"tag": "myc:attr"}]}.
+    * The data are passed in a json value like the following:
+    * {"user": {"id": "myid", "email": "myemail@example.it"}, "tags": [{"tag": "myc:attr"}]}.
     * user - the user informations.
     * tags - the Tags to associate to the user.
     *  @return an http response that indicates the status of the operation.
@@ -178,23 +174,16 @@ object BridgeController extends Controller {
        input.tags foreach {
          _.foreach(t => Tags.save(t, upsert = true))
        }
-       Users.find(inputUser.id).onComplete {
-         case Success(futureUser) => {
-           futureUser match {
-             case Some(u) => {
-               u.tags map (t => println(t))
-               val updatedUser = user.merge(u) /*input.tags.map { listTag =>
-                 user.merge(u.addTags(listTag))
-               }.getOrElse(user.merge(u))*/
-               user.merge(u).tags.get map (t => println(t._1))
-               Users.update(updatedUser)
-             }
-             case None => Future{false} //user doesn't exists
-           }
+       val query = "select from Users where uid = \""+inputUser.id+"\" "
+       Users.find(query).flatMap(usrList =>
+         if (usrList.isEmpty) Future(false) else {
+           val u = usrList.head
+           val updatedUser = input.tags.map { listTag =>
+             user.merge(u.addTags(listTag))
+           }.getOrElse(user.merge(u))
+           Users.update(updatedUser)
          }
-         case Failure(t) => None
-       }
-       Future(true)
+       )
      }
      val jsonData = request.body.asJson //get the json data
      jsonData match {

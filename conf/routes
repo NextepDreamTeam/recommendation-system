@@ -13,7 +13,7 @@
 
 # Users associated to some tags
 
-#POST           /tag/users                              recommendationsystem.controllers.BridgeController.userMatchingTag
+POST           /tag/users                              recommendationsystem.controllers.BridgeController.userMatchingTag
 
 # Insert on the DB
 POST           /tag/new                                recommendationsystem.controllers.BridgeController.addTag
