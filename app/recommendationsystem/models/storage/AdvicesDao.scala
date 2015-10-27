@@ -1,6 +1,6 @@
 package recommendationsystem.models.storage
 
-import _root_.recommendationsystem.models.Advice
+import _root_.recommendationsystem.models.{User, Advice}
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
 import com.orientechnologies.orient.core.sql.OCommandSQL
 import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
@@ -26,7 +26,7 @@ trait AdvicesDao {
 
   def all: Future[List[Advice]]
 
-  def find(id: String): Future[Option[Advice]]
+  def find(id: String): Future[List[Advice]]
 }
 
 object AdvicesOdb extends AdvicesDao {
@@ -166,12 +166,13 @@ object AdvicesOdb extends AdvicesDao {
       val adviceVertex = graph.getVertex(rid)
       val userVertex = adviceVertex.getEdges(Direction.OUT, "AdviceUser").asScala
         .map(v => v.getVertex(Direction.OUT)).head
+      val user: User = UsersOdb.getUser(userVertex.getId)
       val tagsAdviceVertex = adviceVertex.getEdges(Direction.OUT, "AdviceOutput").asScala
         .map(v => v.getVertex(Direction.OUT))
-      val output = tagsAdviceVertex map (x => (x.getProperty("tag"), 0D)) toList
-      val advice = Advice(
+      val output = tagsAdviceVertex.map(x => (x.getProperty("tag"), 0D)).toList
+      Advice(
         adviceVertex.getProperty("aid"),
-        userVertex.getProperty("uid"),
+        user,
         output,
         adviceVertex.getProperty("date"),
         adviceVertex.getProperty("clicked"),
@@ -180,5 +181,4 @@ object AdvicesOdb extends AdvicesDao {
     }
     ridAdvices.map(rid => getAdvice(rid.getId)).toList
   }
-
 }

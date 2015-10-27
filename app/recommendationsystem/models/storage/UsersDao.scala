@@ -1,5 +1,6 @@
 package recommendationsystem.models.storage
 
+import _root_.recommendationsystem.models.{Tag, User}
 import com.orientechnologies.orient.core.sql.OCommandSQL
 import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
 import recommendationsystem.models.{Tag, User}
@@ -27,6 +28,16 @@ trait UsersDao {
 }
 
 object UsersOdb extends UsersDao {
+
+  def getUser(rid: AnyRef): User = {
+    val graph = Odb.factory.getNoTx
+    val userVertex = graph.getVertex(rid)
+    val userTagsEdge = userVertex.getEdges(Direction.OUT, "HoldsTag").asScala
+    val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.IN))
+    val tagList = userTagsEdge zip userTagsVertex map
+      (x => (Tag(x._2.getProperty("tag"), None), x._1.getProperty("weight"), x._1.getProperty("lastInsert"))) toList;
+    User(userVertex.getProperty("uid"), Option(userVertex.getProperty("email")), None, Option(tagList))
+  }
 
   override def count: Future[Long] = Future {
     val graph = Odb.factory.getNoTx
@@ -88,17 +99,7 @@ object UsersOdb extends UsersDao {
     val graph = Odb.factory.getNoTx
     val res: OrientDynaElementIterable = graph.command(new OCommandSQL(query)).execute()
     val ridUsers: Iterable[Vertex] = res.asScala.asInstanceOf[Iterable[Vertex]]
-
-    def getUser(rid: AnyRef): User = {
-      val userVertex = graph.getVertex(rid)
-      val userTagsEdge = userVertex.getEdges(Direction.OUT, "HoldsTag").asScala
-      val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.IN))
-      val tagList = userTagsEdge zip userTagsVertex map
-        (x => (Tag(x._2.getProperty("tag"), None), x._1.getProperty("weight"), x._1.getProperty("lastInsert"))) toList;
-      User(userVertex.getProperty("uid"), Option(userVertex.getProperty("email")), None, Option(tagList))
-      }
-
-      ridUsers.map(rid => getUser(rid.getId)).toList
+    ridUsers.map(rid => getUser(rid.getId)).toList
     }
 
   override def update(e: User): Future[Boolean] = Future {
