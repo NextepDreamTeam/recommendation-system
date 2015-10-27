@@ -15,7 +15,8 @@ object MatchingCookie {
 
 
 object CookieMatching extends Controller {
-  
+
+  //controllare redirectTo
   def synchCookie(cookie: String, redirectTo: String) = Action { request =>
     val dreUserId = request.session.get("userId").getOrElse(java.util.UUID.randomUUID.toString)
     Cache.set(cookie, dreUserId, 365 days)

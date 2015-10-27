@@ -22,7 +22,7 @@ POST           /user/update                            recommendationsystem.cont
 
 # Cookie matching
 
-#GET            /synchCookie/:cookie                    recommendationsystem.controllers.CookieMatching.synchCookie(cookie, redirectTo)
+GET            /synchCookie/:cookie/:redirectTo        recommendationsystem.controllers.CookieMatching.synchCookie(cookie, redirectTo)
 
 # Statistics
 
