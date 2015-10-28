@@ -26,10 +26,30 @@ trait AdvicesDao {
 
   def all: Future[List[Advice]]
 
-  def find(id: String): Future[List[Advice]]
+  def find(query: String): Future[List[Advice]]
 }
 
 object AdvicesOdb extends AdvicesDao {
+
+  def getAdvice(rid: AnyRef): Advice = {
+    val graph = Odb.factory.getNoTx
+    val adviceVertex = graph.getVertex(rid)
+    val userVertex = adviceVertex.getEdges(Direction.OUT, "AdviceUser").asScala
+      .map(v => v.getVertex(Direction.OUT)).head
+    val user: User = UsersOdb.getUser(userVertex.getId)
+    val tagsAdviceVertex = adviceVertex.getEdges(Direction.OUT, "AdviceOutput").asScala
+      .map(v => v.getVertex(Direction.OUT))
+    val output = tagsAdviceVertex.map(x => (x.getProperty("tag"), 0D)).toList
+    Advice(
+      adviceVertex.getProperty("aid"),
+      user,
+      output,
+      adviceVertex.getProperty("date"),
+      adviceVertex.getProperty("clicked"),
+      adviceVertex.getProperty("type")
+    )
+  }
+
   override def count: Future[Long] = Future {
     val graph = Odb.factory.getNoTx
     graph.countVertices("Advices")
@@ -96,29 +116,7 @@ object AdvicesOdb extends AdvicesDao {
     val graph = Odb.factory.getNoTx
     ODatabaseRecordThreadLocal.INSTANCE.set(graph.getRawGraph)
     val vlst: Iterable[Vertex] = graph.getVerticesOfClass("Advices").asScala
-    val lst = vlst map (adviceVertex => {
-      //get tags of this advice
-      val tagsAdviceVertex = adviceVertex.getEdges(Direction.OUT,"AdviceOutput").asScala
-        .map(v => v.getVertex(Direction.OUT))
-      val output = tagsAdviceVertex map (x => (x.getProperty("tag"),0D)) toList
-
-      //get user information
-      val userVertex = adviceVertex.getEdges(Direction.OUT,"AdviceUser").asScala.map(v => v.getVertex(Direction.OUT)).head
-      //user must be one
-      val userTagsEdge = adviceVertex.getEdges(Direction.OUT,"HoldsTag").asScala
-      val userTagsVertex = userTagsEdge map (e => e.getVertex(Direction.OUT))
-      val tagList = userTagsEdge zip userTagsVertex map
-        (x => (x._2.getProperty("tag"),x._1.getProperty("weight"),x._1.getProperty("lastInsert"))) toList
-      val user = User(userVertex.getProperty("uid"),userVertex.getProperty("email"),None,Option(tagList))
-
-      Advice(
-        adviceVertex.getProperty("aid"),
-        user,output,
-        adviceVertex.getProperty("date"),
-        adviceVertex.getProperty("clicked"),
-        adviceVertex.getProperty("type")
-      )
-    })
+    val lst = vlst map (adviceVertex => getAdvice(adviceVertex.getId))
     Future{lst.toList}
   }
 
@@ -161,24 +159,6 @@ object AdvicesOdb extends AdvicesDao {
     val graph = Odb.factory.getNoTx
     val res: OrientDynaElementIterable = graph.command(new OCommandSQL(query)).execute()
     val ridAdvices: Iterable[Vertex] = res.asScala.asInstanceOf[Iterable[Vertex]]
-
-    def getAdvice(rid: AnyRef): Advice = {
-      val adviceVertex = graph.getVertex(rid)
-      val userVertex = adviceVertex.getEdges(Direction.OUT, "AdviceUser").asScala
-        .map(v => v.getVertex(Direction.OUT)).head
-      val user: User = UsersOdb.getUser(userVertex.getId)
-      val tagsAdviceVertex = adviceVertex.getEdges(Direction.OUT, "AdviceOutput").asScala
-        .map(v => v.getVertex(Direction.OUT))
-      val output = tagsAdviceVertex.map(x => (x.getProperty("tag"), 0D)).toList
-      Advice(
-        adviceVertex.getProperty("aid"),
-        user,
-        output,
-        adviceVertex.getProperty("date"),
-        adviceVertex.getProperty("clicked"),
-        adviceVertex.getProperty("type")
-      )
-    }
     ridAdvices.map(rid => getAdvice(rid.getId)).toList
   }
 }
