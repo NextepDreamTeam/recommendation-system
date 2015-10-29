@@ -1,4 +1,4 @@
-/*package recommendationsystem.controllers.manager
+package recommendationsystem.controllers.manager
 
 import play.api.mvc._
 import play.api.libs.concurrent.Execution.Implicits._
@@ -16,15 +16,15 @@ class CorrelationsController extends Controller {
    */
   def list(page: Int) = Action.async {
     val pageLength = 50
-    val futureCorrelations = Correlations.all.skip((page - 1) * pageLength).limit(pageLength).toList
+    val futureCorrelations = Correlations.all
+      //.skip((page - 1) * pageLength).limit(pageLength).toList
     val futureCount = Correlations.count
     for{
       correlations <- futureCorrelations
       count <- futureCount
     } yield {
-      Ok(recommendationsystem.views.html.manager.correlations.list("test", correlations, count, page, pageLength))
+      Ok(recommendationsystem.views.html.manager.correlations.list("test", correlations, count.toInt, page, pageLength))
     }
   }
 
   }
-*/

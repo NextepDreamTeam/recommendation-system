@@ -31,7 +31,7 @@ class UsersController extends Controller {
     } yield {
       user match {
         case u :: xs => Ok(recommendationsystem.views.html.manager.users.detail("", u))
-        //case Nil => Redirect(routes.UsersController.list(1))
+        case Nil => Redirect(routes.UsersController.list(1))
       }
     }
   }

@@ -58,10 +58,10 @@ GET            /advices                                @recommendationsystem.con
 GET            /advices/$page<[1-9][0-9]*>             @recommendationsystem.controllers.manager.AdvicesController.list(page: Int)
 GET            /tags                                   @recommendationsystem.controllers.manager.TagsController.list(page: Int = 1)
 GET            /tags/$page<[1-9][0-9]*>                @recommendationsystem.controllers.manager.TagsController.list(page: Int)
-#GET            /correlations                           @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int = 1)
-#GET            /correlations/$page<[1-9][0-9]*>        @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int)
-#GET            /files/documents                        @recommendationsystem.controllers.manager.Manager.documents
-#GET            /files/plugins                          @recommendationsystem.controllers.manager.Manager.plugins
+GET            /correlations                           @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int = 1)
+GET            /correlations/$page<[1-9][0-9]*>        @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int)
+GET            /files/documents                        @recommendationsystem.controllers.manager.Manager.documents
+GET            /files/plugins                          @recommendationsystem.controllers.manager.Manager.plugins
 #GET            /pearson                                @recommendationsystem.controllers.manager.Manager.startPearson
 
 
