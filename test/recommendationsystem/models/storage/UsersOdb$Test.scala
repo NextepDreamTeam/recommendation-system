@@ -46,7 +46,7 @@ class UsersOdb$Test extends FunSuite with BeforeAndAfterEach {
     Await.result(save,Duration(3,TimeUnit.SECONDS))
     val find = UsersOdb.find("12345")
     find onComplete {
-      case Success(l) => assert(l.isDefined)
+      case Success(l) => assert(l.nonEmpty)
       case Failure(t) => assert(false)
     }
     Await.result(find,Duration(3,TimeUnit.SECONDS))

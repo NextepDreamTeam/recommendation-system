@@ -4,7 +4,7 @@ import com.orientechnologies.orient.core.sql.OCommandSQL
 import com.tinkerpop.blueprints.{Edge, Direction}
 import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
 import recommendationsystem.algorithms.TagsMatch
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._
@@ -146,7 +146,7 @@ object TagsMatchOdb extends TagsMatchDao {
     }
   }
 
-  override def find(query: String): Future[List[TagsMatch]] = {
+  override def find(query: String): Future[List[TagsMatch]] = Future {
     val graph = Odb.factory.getNoTx
     val res: OrientDynaElementIterable = graph.command(new OCommandSQL(query)).execute()
     val ridEdges: Iterable[Edge] = res.asScala.asInstanceOf[Iterable[Edge]]

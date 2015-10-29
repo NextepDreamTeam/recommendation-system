@@ -3,7 +3,6 @@ package recommendationsystem.models.storage
 import com.orientechnologies.orient.core.sql.OCommandSQL
 import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
 import recommendationsystem.algorithms.TagSum
-
 import com.tinkerpop.blueprints.{Edge, Direction, Vertex}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

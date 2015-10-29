@@ -63,8 +63,8 @@ class RequestsOdb$Test extends FunSuite with BeforeAndAfterEach {
     val fres = RequestsOdb.find("req2")
     fres onComplete{
       case Success(o) => o match {
-        case Some(x) => Odb.clearDb; assert (true)
-        case None => Odb.clearDb; assert(false)
+        case x :: xs => Odb.clearDb; assert (true)
+        case Nil => Odb.clearDb; assert(false)
       }
     }
     Await.result(fres,Duration(3,TimeUnit.SECONDS))

@@ -4,7 +4,7 @@ import com.orientechnologies.orient.core.sql.OCommandSQL
 import com.tinkerpop.blueprints.{Edge, Direction}
 import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
 import recommendationsystem.algorithms.Similarity
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.collection.JavaConverters._
 import scala.collection.JavaConversions._

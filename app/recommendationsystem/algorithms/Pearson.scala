@@ -1,4 +1,4 @@
-/*package recommendationsystem.algorithms
+package recommendationsystem.algorithms
 
 import akka.actor.Actor
 import akka.actor.Props
@@ -6,40 +6,49 @@ import akka.actor.ActorSystem
 import akka.routing.RoundRobinRouter
 import akka.routing.Broadcast
 import play.api.Play.current
+import recommendationsystem.models.storage._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
 import play.api.libs.iteratee._
 import scala.collection.mutable.HashMap
 import play.api.libs.concurrent.Execution.Implicits._
-import recommendationsystem.models.storage.MongoObj
-//import play.modules.reactivemongo.json.collection.JSONCollection
-//import reactivemongo.core.commands._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import scala.util._
 import scala.concurrent._
 import recommendationsystem.models._
 
+
 case class TagSum(_id: String, sum: Double, sumQ: Double)
 object TagSum {
-  implicit val TagSumFormat = (
+  /*implicit val TagSumFormat = (
     (__ \ "_id").format[String] ~
     (__ \ "value" \ "sum").format[Double] ~
-    (__ \ "value" \ "sumQ").format[Double])(TagSum.apply, unlift(TagSum.unapply))
+    (__ \ "value" \ "sumQ").format[Double])(TagSum.apply, unlift(TagSum.unapply))*/
+}
+//probabilmente veniva utilizzato per salvare nel db delle info dell'algoritmo
+object TagsSums extends TagsSumsDao {
+  //val collectionName = "tagsSums"//"recommendation.tagsSums"
+  //implicit val storageFormat = TagSum.TagSumFormat
+  override def count: Future[Long] = TagsSumsOdb.count
+
+  override def update(newTagSum: TagSum): Future[Boolean] = TagsSumsOdb.update(newTagSum)
+
+  override def all: Future[List[TagSum]] = TagsSumsOdb.all
+
+  override def remove(e: TagSum): Future[Boolean] = TagsSumsOdb.remove(e)
+
+  override def save(e: TagSum, upsert: Boolean): Future[Boolean] = TagsSumsOdb.save(e,upsert)
+
+  override def find(query: String): Future[List[TagSum]] = TagsSumsOdb.find(query)
 }
 
-/*
-probabilmente veniva utilizzato per salvare nel db delle info dell'algoritmo
-object TagsSums extends MongoObj[TagSum] {
-  val collectionName = "tagsSums"//"recommendation.tagsSums"
-  implicit val storageFormat = TagSum.TagSumFormat
-}
-*/
 
-case class TagsMatch(_id: String, tag1: String, tag2: String, sum1: Double, sum2: Double, sumQ1: Double, sumQ2: Double, sumProd: Double, count: Int)
+
+case class TagsMatch(tag1: String, tag2: String, sum1: Double, sum2: Double, sumQ1: Double, sumQ2: Double, sumProd: Double, count: Int)
 object TagsMatch {
-  implicit val TagsMatchFormat = (
+  /*implicit val TagsMatchFormat = (
     (__ \ "_id").format[String] ~
     (__ \ "value" \ "tag1").format[String] ~
     (__ \ "value" \ "tag2").format[String] ~
@@ -48,26 +57,50 @@ object TagsMatch {
     (__ \ "value" \ "sumQ1").format[Double] ~
     (__ \ "value" \ "sumQ2").format[Double] ~
     (__ \ "value" \ "sumProd").format[Double] ~
-    (__ \ "value" \ "count").format[Int])(TagsMatch.apply, unlift(TagsMatch.unapply))
+    (__ \ "value" \ "count").format[Int])(TagsMatch.apply, unlift(TagsMatch.unapply))*/
+}
+object TagsCompared extends TagsMatchDao {
+  /*val collectionName = "tagsMatch"//"recommendation.tagsMatch"
+  implicit val storageFormat = TagsMatch.TagsMatchFormat*/
+  override def count: Future[Long] = TagsMatchOdb.count
+
+  override def update(newTagSum: TagsMatch): Future[Boolean] = TagsMatchOdb.update(newTagSum)
+
+  override def all: Future[List[TagsMatch]] = TagsMatchOdb.all
+
+  override def remove(e: TagsMatch): Future[Boolean] = TagsMatchOdb.remove(e)
+
+  override def save(e: TagsMatch, upsert: Boolean): Future[Boolean] = TagsMatchOdb.save(e,upsert)
+
+  override def find(query: String): Future[List[TagsMatch]] = TagsMatchOdb.find(query)
 }
 
-object TagsCompared extends MongoObj[TagsMatch] {
-  val collectionName = "tagsMatch"//"recommendation.tagsMatch"
-  implicit val storageFormat = TagsMatch.TagsMatchFormat
-}
 
-case class Similarity(id: String, tag1: String, tag1Name: String, tag2: String, tag2Name: String, eq: Double)
-object Similarity extends MongoObj[Similarity] {
-  val collectionName = "tagsSimilarity"//"recommendation.tagsSimilarity"
+case class Similarity(tag1Name: String, tag2Name: String, eq: Double)
+object Similarity extends TagsSimilarityDao {
+
+  /*val collectionName = "tagsSimilarity"//"recommendation.tagsSimilarity"
   implicit val storageFormat: OFormat[Similarity] = Json.format[Similarity]
-  //  implicit val TagsSimilarityformat = (
+  //implicit val TagsSimilarityformat = (
   //    (__ \ "id").format[String] ~
   //    (__ \ "tag1").format[String] ~
   //    (__ \ "tag2").format[String] ~
   //    (__ \ "eq").format[Double] ~
-  //    (__ \ "count").format[Int])(TagsMatch.apply, unlift(TagsMatch.unapply))
+  //    (__ \ "count").format[Int])(TagsMatch.apply, unlift(TagsMatch.unapply))*/
+  override def count: Future[Long] = TagsSimilarityOdb.count
+
+  override def update(newTagSimilarity: Similarity): Future[Boolean] = TagsSimilarityOdb.update(newTagSimilarity)
+
+  override def all: Future[List[Similarity]] = TagsSimilarityOdb.all
+
+  override def remove(e: Similarity): Future[Boolean] = TagsSimilarityOdb.remove(e)
+
+  override def save(e: Similarity, upsert: Boolean): Future[Boolean] = TagsSimilarityOdb.save(e,upsert)
+
+  override def find(query: String): Future[List[Similarity]] = TagsSimilarityOdb.find(query)
 }
 
+/*
 object Pearson {
   val map1 = """
       function() {
