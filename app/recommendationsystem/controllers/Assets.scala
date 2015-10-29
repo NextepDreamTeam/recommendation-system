@@ -1,4 +1,7 @@
-/*package recommendationsystem.controllers
+/*
+package recommendationsystem.controllers
 
-object Assets extends controllers.AssetsBuilder
+import controllers.AssetsBuilder
+
+object Assets extends AssetsBuilder
 */

@@ -1,14 +1,13 @@
-/*package recommendationsystem.controllers.manager
+package recommendationsystem.controllers.manager
 
-import play.api.libs.json
-import play.api.libs.json._
-import play.api.mvc._
-import play.api.data._
 import play.api.data.Forms._
+import play.api.data._
+import play.api.mvc._
+import play.libs.Json
 import recommendationsystem.models._
-import recommendationsystem.models.storage.AdvicesOdb
-import scala.concurrent._
-import ExecutionContext.Implicits.global
+import recommendationsystem.models.storage.{AdvicesOdb, TagsOdb}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
  * Class that represents the controller that has the goal the handle all the statistics requests.
@@ -43,7 +42,7 @@ class StatisticsController extends Controller{
    */
   private def calculateMax: Future[Option[(String, Int)]] = {
     //get all the Tags presents in the db.
-    Tags.all flatMap { case tags =>
+    TagsOdb.all flatMap { case tags =>
       val xs = tags map { case tag =>
         val tagName = tag.category  + ":" + tag.attr //create the String representation of the Tag.
       //Search all the document where tags.tag == tagName and for each document return a tuple (tag, number).
@@ -70,6 +69,8 @@ class StatisticsController extends Controller{
   }
 
 
+
+
   /**
    * Method that search the most used tag.
    * The loading of the page can be slow.
@@ -80,6 +81,7 @@ class StatisticsController extends Controller{
 
   }
 
+  /*
   /**
    * Method that search the most used tag in the db.
    * The method do the same job of the maxHtml method, but returns a Json as results.
@@ -96,6 +98,7 @@ class StatisticsController extends Controller{
     })
   }
 
+  */
   /**
    * Method that find all the clicked advices.
    * @return A Future containing a List[Advice] object.
@@ -116,6 +119,7 @@ class StatisticsController extends Controller{
       )
   }
 
+  /*
   /**
    * Method that returns a json containing the clicked tags.
    * @return a Future[Response] containing the json result.
@@ -126,7 +130,9 @@ class StatisticsController extends Controller{
       Future{Ok{Json.obj("elements" -> jsonArray)}}
     }
   }
+  */
 
+  /*
   /**
    * Method the number and the average of Advices in some period.
    * @param range represents the period on which calculate the (average, number).
@@ -415,5 +421,5 @@ class StatisticsController extends Controller{
 
   }
 
-}
 */
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="http://localhost:9000/assets/javascripts/dre.js" type="text/javascript" charset="utf-8"></script>
+	<title> Prova DRE </title>
+</head>
+<body>
+<div id="content">
+	<p>result</p>
+	<div id="result">
+	</div>
+</div>
+<script type="text/javascript">
+
+	// parso il json
+	var json = $.parseJSON('{"user" : {"email": "prova@email.com"},' +
+													'"tags": [{"tag":"categoria1:attr11"}, {"tag":"categoria1:attr12"}, {"tag":"categoria2:attr21"}],'+
+													'"mandatoryTags": [{"tag":"mcategoria1:mattr11"}, {"tag":"mcategoria1:mattr12"}],'+
+													'"feedback": {"idR": "1383039903274"}}' );
+	
+	// funzione di callback per elaborare la risposta (la raccomandazione),
+	// data contiene il JSON con le raccomandazioni
+	var callback = function processData(data, textStatus, jqXHR) {
+		$('#result').append(JSON.stringify(data));
+	};
+	
+	
+	// Con tale funzione effettuo la chiamata al servizio di raccomandazioni, 
+	// come parametri richiede il json da inviare (con la richiesta)
+	// e la funzione di callback nella quale gestire la risposta
+	dre.advise(json, callback);
+
+</script>
+</body>
+</html>

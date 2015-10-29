@@ -26,7 +26,7 @@ GET            /synchCookie/:cookie/:redirectTo        recommendationsystem.cont
 
 # Statistics
 
-#GET            /statistics/index                       @recommendationsystem.controllers.manager.StatisticsController.index
+GET            /statistics/index                       @recommendationsystem.controllers.manager.StatisticsController.index
 #GET            /statistics/max                         @recommendationsystem.controllers.manager.StatisticsController.maxHtml
 #GET            /statistics/max/json                    @recommendationsystem.controllers.manager.StatisticsController.maxJson
 #GET            /statistics/clicked                     @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesHtml
@@ -48,16 +48,16 @@ GET            /synchCookie/:cookie/:redirectTo        recommendationsystem.cont
 
 # Management
 
-#GET            /                                       @recommendationsystem.controllers.manager.UsersController.list(page: Int = 1)
-#GET            /users                                  @recommendationsystem.controllers.manager.UsersController.list(page: Int = 1)
-#GET            /users/$page<[1-9][0-9]*>               @recommendationsystem.controllers.manager.UsersController.list(page: Int)
-#GET            /users/detail/:id                       @recommendationsystem.controllers.manager.UsersController.detail(id: String)
-#GET            /inputs                                 @recommendationsystem.controllers.manager.InputsController.list(page: Int = 1)
-#GET            /inputs/$page<[1-9][0-9]*>              @recommendationsystem.controllers.manager.InputsController.list(page: Int)
-#GET            /advices                                @recommendationsystem.controllers.manager.AdvicesController.list(page: Int = 1)
-#GET            /advices/$page<[1-9][0-9]*>             @recommendationsystem.controllers.manager.AdvicesController.list(page: Int)
-#GET            /tags                                   @recommendationsystem.controllers.manager.TagsController.list(page: Int = 1)
-#GET            /tags/$page<[1-9][0-9]*>                @recommendationsystem.controllers.manager.TagsController.list(page: Int)
+GET            /                                       @recommendationsystem.controllers.manager.UsersController.list(page: Int = 1)
+GET            /users                                  @recommendationsystem.controllers.manager.UsersController.list(page: Int = 1)
+GET            /users/$page<[1-9][0-9]*>               @recommendationsystem.controllers.manager.UsersController.list(page: Int)
+GET            /users/detail/:id                       @recommendationsystem.controllers.manager.UsersController.detail(id: String)
+GET            /inputs                                 @recommendationsystem.controllers.manager.InputsController.list(page: Int = 1)
+GET            /inputs/$page<[1-9][0-9]*>              @recommendationsystem.controllers.manager.InputsController.list(page: Int)
+GET            /advices                                @recommendationsystem.controllers.manager.AdvicesController.list(page: Int = 1)
+GET            /advices/$page<[1-9][0-9]*>             @recommendationsystem.controllers.manager.AdvicesController.list(page: Int)
+GET            /tags                                   @recommendationsystem.controllers.manager.TagsController.list(page: Int = 1)
+GET            /tags/$page<[1-9][0-9]*>                @recommendationsystem.controllers.manager.TagsController.list(page: Int)
 #GET            /correlations                           @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int = 1)
 #GET            /correlations/$page<[1-9][0-9]*>        @recommendationsystem.controllers.manager.CorrelationsController.list(page: Int)
 #GET            /files/documents                        @recommendationsystem.controllers.manager.Manager.documents
@@ -66,4 +66,4 @@ GET            /synchCookie/:cookie/:redirectTo        recommendationsystem.cont
 
 
 # Map static resources from the /public folder to the /assets URL path
-#GET            /assets/*file                           recommendationsystem.controllers.Assets.at(path="/public/recommendationsysem", file)
+GET            /assets/*file                           controllers.Assets.at(path="/public/recommendationsysem", file)

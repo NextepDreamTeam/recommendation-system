@@ -1,4 +1,3 @@
-@*
 @(message: String, users: List[recommendationsystem.models.User], count:Int, page:Int, pageLength:Int)
 
 @import recommendationsystem.models._
@@ -23,7 +22,7 @@
         @for((user, i) <- users.zipWithIndex){
           <tr>
 	        <td>@(i + (page - 1) * pageLength)</td>
-	        <td><a href="@recommendationsystem.controllers.manager.routes.UsersController.detail(user.id)">@user.id</a></td>
+              <td><a href="@recommendationsystem.controllers.manager.routes.UsersController.detail(user.id)">@user.id</a></td>
 	        <td>@user.email.getOrElse(" - ")</td>
 	        <td>@user.anag.getOrElse(Anag("-",  "-")).name</td>
 	        <td>@user.anag.getOrElse(Anag("-",  "-")).lastName</td>
@@ -38,4 +37,3 @@
     @recommendationsystem.views.html.helper.paginator(page, pageLength, count, recommendationsystem.controllers.manager.routes.UsersController.list(_))
 </div>
 }
-*@

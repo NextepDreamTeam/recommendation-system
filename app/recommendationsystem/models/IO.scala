@@ -45,6 +45,7 @@ case class FindSuggestion(
 object FindSuggestion {
   implicit val storageFormatters = recommendationsystem.formatters.json.FindSuggestionFormatters
 }
+*/
 
 /**
  * Class that represents a REST request for a range in a period.
@@ -60,4 +61,4 @@ case class Range (
 
 object Range {
   implicit val storageFormatters = recommendationsystem.formatters.json.InputFormatters
-}*/
+}
