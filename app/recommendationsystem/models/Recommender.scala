@@ -1,4 +1,4 @@
-/*package recommendationsystem.models
+package recommendationsystem.models
 
 import scala.concurrent.Future
 import play.api.libs.json.Json
@@ -8,6 +8,7 @@ import akka.util.Timeout
 import akka.pattern._
 import scala.concurrent.duration._
 import play.api.libs.iteratee.Iteratee
+import play.api.libs.iteratee.Enumerator
 import play.api.libs.json.JsValue
 import scala.util._
 import scala.concurrent.Promise
@@ -32,15 +33,17 @@ object Recommender {
     /** Load user */
     val futureUser = request.user match {
       case User(id, Some(email), _, _) =>
-        Users.find(Json.obj("email" -> email)).one
+        val query = "select from Users where email in "+Json.arr(email)
+        Users.find(query)
       case User(id, None, _, _) =>
-        Users.find(Json.obj("id" -> request.user.id)).one
+        val query = "select from Users where uid in "+Json.arr(id)
+        Users.find(query)
     }
 
     val futureResult = Promise[Advice];
     futureUser.foreach {
       /*L'utente ?? presente*/
-      case Some(user) => user.tags match {
+      case user :: xs => user.tags match {
         /*L'utente ha tag*/
         case Some(tags) => (actor ? Elaborate(request.id, tags)).mapTo[List[(Tag, Double)]] andThen {
           case Success(Nil) =>
@@ -64,7 +67,7 @@ object Recommender {
         }
       }
       /*L'utente non ?? presente*/
-      case None => defaultAdvise(request).onComplete {
+      case Nil => defaultAdvise(request).onComplete {
         case Success(a) => futureResult.success(a)
         case Failure(e) => futureResult.failure(e)
       }
@@ -77,8 +80,8 @@ object Recommender {
    * Return a default advice
    */
   def defaultAdvise(request: Request): Future[Advice] = {
-    val futureTags = Tags.all.limit(5).toList
-    futureTags.map(listTags => Advice(request.id, request.user, listTags.map((_, 0D)), "default"))
+    val futureTags = Tags.all//.limit(5).toList
+    futureTags.map(listTags => Advice(request.id, request.user, listTags.take(5).map((_, 0D)), "default"))
   }
 }
 
@@ -203,16 +206,18 @@ class Master extends Actor with akka.actor.ActorLogging {
   }
 }
 
+
 /**
  * Smallest worker actor, only calculate his similar tags, and send the list to the master actor
  */
 class TagActor extends Actor with akka.actor.ActorLogging {
   /**
-   * 
+   *
    */
   def receive = {
     case Calculate(id, (tag, weight, l)) =>
-      val equalsTag = Similarity.find(Json.obj("tag1" -> tag.id)).toEnum
+      val query = "select from TagsSimilarity where outV() IN (select from Tags where tag = \"" + tag.id + "\")"
+      val equalsTag = Similarity.find(query)//.toEnum
       def tagIteratee: Iteratee[Similarity, List[(String, Double, Double)]] = Iteratee.fold(List[(String, Double, Double)]()) { (acc, json) =>
         //log.debug(s"tagIteratee $acc json: $json")
         val eq = json.eq //(json \ "eq").as[Double]
@@ -220,10 +225,10 @@ class TagActor extends Actor with akka.actor.ActorLogging {
         (json.tag2Name, n, eq) :: acc
       }
       val keepSender = sender
-      equalsTag.run(tagIteratee).onComplete {
+      //TODO
+      /*equalsTag.run(tagIteratee).onComplete {
         case Success(list) => keepSender ! Completed(id, list)
         case Failure(e) => keepSender ! Failed(id)
-      }
+      }*/
   }
 }
-*/

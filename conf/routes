@@ -4,12 +4,12 @@
 
 # Home page
 
-#POST           /advise                                 recommendationsystem.controllers.Application.advise
-#OPTIONS        /advise                                 recommendationsystem.controllers.Application.checkPreAdvise
+POST           /advise                                 recommendationsystem.controllers.Application.advise
+OPTIONS        /advise                                 recommendationsystem.controllers.Application.checkPreAdvise
 
-#GET            /correlation                            recommendationsystem.controllers.Application.correlation
+GET            /correlation                            recommendationsystem.controllers.Application.correlation
 
-#POST           /suggestion                             recommendationsystem.controllers.Application.suggestion
+POST           /suggestion                             recommendationsystem.controllers.Application.suggestion
 
 # Users associated to some tags
 

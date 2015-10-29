@@ -82,8 +82,8 @@ class AdvicesOdb$Test extends FunSuite with BeforeAndAfterEach {
     val find = AdvicesOdb.find(advice1.id)
     find onComplete {
       case Success(o) => o match {
-        case Some(x) => assert (true)
-        case None => assert(false)
+        case x :: xs => assert (true)
+        case Nil => assert(false)
       }
     }
     Await.result(find,minDur)

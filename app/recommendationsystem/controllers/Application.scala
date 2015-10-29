@@ -1,12 +1,8 @@
-/*package recommendationsystem.controllers
+package recommendationsystem.controllers
 
 import play.api._
 import play.api.mvc._
 import play.api.cache.Cache
-import reactivemongo.api._
-import reactivemongo.core.commands._
-import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
 import play.api.libs.json._
 import play.api.Play.current
 import scala.concurrent.Future
@@ -43,7 +39,9 @@ object Application extends Controller {
         		 
           /** if (feedback) update recommendation to database */
           input.feedback.foreach { idR =>
-            Advices.update(Json.obj("id" -> idR), Json.obj("clicked" -> true))
+            val query = "select from Advices where aid in " + Json.arr(idR)
+            val advicesSearched = Advices.find(query)
+            advicesSearched.flatMap(a => {Advices.update(a.head.copy(clicked=true))})
           }
           //** save new tags*/
           input.tags foreach {
@@ -52,37 +50,40 @@ object Application extends Controller {
 
           //TODO: check if user save part is correct, think about uid and email
           /** save/update (upsert) user preferences */
-          val futureUser = Users.find(Json.obj("id" -> user.id)).one
+          val query = "select from Users where uid in " + Json.arr(user.id)
+          val futureUser = Users.find(query)//must be one
           //** set callback */
           futureUser.onSuccess {
-            case Some(u) =>
+            case u :: xs =>
               val updatedUser = input.tags.map { listTag =>
                 user.merge(u.addTags(listTag))
               }.getOrElse(user.merge(u))
               user.email match {
-                case Some(email) => Users.update(Json.obj("email" -> user.email.get), updatedUser.copy(id = u.id))
-                case None => Users.update(Json.obj("id" -> user.id), updatedUser)
+                case Some(email) => Users.update(updatedUser.copy(id = u.id)) //Users.update(Json.obj("email" -> user.email.get), updatedUser.copy(id = u.id))//TODO!!!
+                case None => Users.update(updatedUser)
               }
-            case None =>
+            case Nil =>
               val updatedUser = input.tags.map { listTag =>
                 user.addTags(listTag)
               }.getOrElse(user)
               /** se non l'ho trovato pu?? essere che sia la prima volta che mette la mail */
               updatedUser.email match {
-                case Some(email) => Users.update(Json.obj("id" -> user.id), updatedUser, upsert = true)
+                case Some(email) => {
+                  Users.update(updatedUser/*, upsert = true*/)
+                }
                 case None if user.id != "" => Users.save(updatedUser)
                 case _ => ()
                 /** questo per evitare di salvare un utente alla prima possibile richiesta PRIMA del redirect */
               }
           }
-
+          //Segnalibro
           /** create request */
           val req = recommendationsystem.models.Request(java.util.UUID.randomUUID.toString, user, input.tags, input.mandatoryTags, System.currentTimeMillis)
           /** save input request, devo sostituire lo user con quello trovato */
           futureUser.onSuccess {
-            case Some(u) =>
+            case u :: xs =>
               Requests.save(req.copy(user = u))
-            case None =>
+            case Nil =>
               Requests.save(req)
           }
           /** make advice */
@@ -119,6 +120,7 @@ object Application extends Controller {
   def checkPreAdvise = CorsAction { request =>
     Ok
   }
+
   /**
    * Method that returns the correlation data to be display in the bubbles-chart.
    * @return a Json value containing the values to display.
@@ -128,13 +130,14 @@ object Application extends Controller {
   def correlation = CorsAction.async {
       //find all the correlation elements on the db
       //Correlations.save(new Correlation("carne", "piazza", 1, 2))
-      Correlations.all.toList flatMap { elements: List[Correlation] =>
+      Correlations.all flatMap { elements: List[Correlation] =>
         val correlations = for(el <- elements) yield Json.obj("category" -> el.category,
           "attribute" -> el.attribute.split(":")(1),
           "value" -> Json.obj("average" -> el.average, "weight" -> el.weight)) //create the sequence
         Future{Ok(Json.obj("elements" -> correlations))} //return the json result
       }
   }
+
   /**
    * Method that returns a list of users who are associated with a given category, but haven't purchased any products of a given product.
    * The category and the product are passed in a json value like the following: {"category": "c1", "product": "c1:p1"}
@@ -150,8 +153,9 @@ object Application extends Controller {
       val existsCategory = Json.obj("tags.tag" -> regexString) //exists category condition
       val notExistsProduct = Json.obj("tags.tag" -> Json.obj("$ne" -> product )) //the not exists already product condition
       val conditions = Seq(existsCategory, notExistsProduct)
-      val query = Json.obj("$and" -> conditions) //the and for the two conditions
-      Users.find(query).toList.flatMap(users =>
+      val query = ""//Json.obj("$and" -> conditions) //the and for the two conditions
+      //TODO cambiare la query da JSON a una query SQL
+      Users.find(query).flatMap(users =>
         if(users.nonEmpty)
           Future{Some(users)}
         else
@@ -180,6 +184,5 @@ object Application extends Controller {
     }
     
   }
-    
+
 }
-*/
