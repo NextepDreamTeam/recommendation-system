@@ -1,6 +1,6 @@
 package recommendationsystem.models.storage
 
-import _root_.recommendationsystem.models.{User, Advice}
+import _root_.recommendationsystem.models.{Tag, User, Advice}
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal
 import com.orientechnologies.orient.core.sql.OCommandSQL
 import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
@@ -35,15 +35,16 @@ object AdvicesOdb extends AdvicesDao {
     val graph = Odb.factory.getNoTx
     val adviceVertex = graph.getVertex(rid)
     val userVertex = adviceVertex.getEdges(Direction.OUT, "AdviceUser").asScala
-      .map(v => v.getVertex(Direction.OUT)).head
+      .map(v => v.getVertex(Direction.IN)).head
     val user: User = UsersOdb.getUser(userVertex.getId)
     val tagsAdviceVertex = adviceVertex.getEdges(Direction.OUT, "AdviceOutput").asScala
-      .map(v => v.getVertex(Direction.OUT))
-    val output = tagsAdviceVertex.map(x => (x.getProperty("tag"), 0D)).toList
+      .map(v => v.getVertex(Direction.IN))
+    val output = tagsAdviceVertex.map(x => (Tag(x.getProperty("tag"),None), 0D))
+    val outputTagList = output.toList
     Advice(
       adviceVertex.getProperty("aid"),
       user,
-      output,
+      outputTagList,
       adviceVertex.getProperty("date"),
       adviceVertex.getProperty("clicked"),
       adviceVertex.getProperty("type")

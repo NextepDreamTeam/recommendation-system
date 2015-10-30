@@ -27,9 +27,9 @@ GET            /synchCookie/:cookie/:redirectTo        recommendationsystem.cont
 # Statistics
 
 GET            /statistics/index                       @recommendationsystem.controllers.manager.StatisticsController.index
-#GET            /statistics/max                         @recommendationsystem.controllers.manager.StatisticsController.maxHtml
+GET            /statistics/max                         @recommendationsystem.controllers.manager.StatisticsController.maxHtml
 #GET            /statistics/max/json                    @recommendationsystem.controllers.manager.StatisticsController.maxJson
-#GET            /statistics/clicked                     @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesHtml
+GET            /statistics/clicked                     @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesHtml
 #GET            /statistics/clicked/json                @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesJson
 #GET            /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.getCalculateStatisticsOnRangeForm
 #POST           /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.calculateGoodAdvicesHtml

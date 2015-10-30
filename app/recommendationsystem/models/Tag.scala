@@ -1,10 +1,9 @@
 package recommendationsystem.models
 
-import recommendationsystem.models.storage.{TagsDao, TagsOdb}
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
-import play.api.Play.current
 import play.api.libs.json.Json
+import recommendationsystem.models.storage.{TagsDao, TagsOdb}
+
+import scala.concurrent.Future
 
 /**
  *
@@ -50,7 +49,7 @@ object Tag {
 
 object Tags extends TagsDao {
 
-  def count: Future[Long] = Tags.count
+  def count: Future[Long] = TagsOdb.count
 
   def save(tag: Tag, upsert: Boolean = false): Future[Boolean] = TagsOdb.save(tag,upsert)
 

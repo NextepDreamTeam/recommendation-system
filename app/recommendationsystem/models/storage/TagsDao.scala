@@ -1,5 +1,6 @@
 package recommendationsystem.models.storage
 
+import _root_.recommendationsystem.models.Tag
 import com.orientechnologies.orient.core.sql.OCommandSQL
 import com.tinkerpop.blueprints.Vertex
 import com.tinkerpop.blueprints.impls.orient.OrientDynaElementIterable
@@ -46,8 +47,8 @@ object TagsOdb extends TagsDao {
 
   override def all: Future[List[Tag]] = Future {
     val graph = Odb.factory.getNoTx
-    val tagVertices = graph.getVerticesOfClass("Tags").asScala
-    val tagList = tagVertices.map(v => Tag(v.getProperty("tag"),None)).toList
+    val tagVertices = graph.getVerticesOfClass("Tags").asScala.toList
+    val tagList = tagVertices.map(v => Tag(v.getProperty("tag"),None))
     tagList
   }
 
