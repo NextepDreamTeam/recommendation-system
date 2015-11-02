@@ -38,9 +38,9 @@ POST           /statistics/good                        @recommendationsystem.con
 GET            /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.showRequestForm
 POST           /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.searchTopRequestTagsValidateForm
 GET            /statistics/tags/requests/:s/:f         @recommendationsystem.controllers.manager.StatisticsController.displayTopRequestResult(s: Long, f: Long)
-GET            /statistics/:average/:count             @recommendationsystem.controllers.manager.StatisticsController.displayStatistics(average: Double, count: Int)
 #POST           /statistics/tags/advices/json           @recommendationsystem.controllers.manager.StatisticsController.topAdvicesJson
 GET            /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesForm
+GET            /statistics/:average/:count             @recommendationsystem.controllers.manager.StatisticsController.displayStatistics(average: Double, count: Int)
 POST           /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesValidateForm
 GET            /statistics/tags/advices/:s/:f          @recommendationsystem.controllers.manager.StatisticsController.displayTopAdvicesResults(s: Long, f: Long)
 #GET            /statistics/tag                         @recommendationsystem.controllers.manager.StatisticsController.userTag
