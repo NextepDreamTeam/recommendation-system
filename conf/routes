@@ -31,18 +31,18 @@ GET            /statistics/max                         @recommendationsystem.con
 #GET            /statistics/max/json                    @recommendationsystem.controllers.manager.StatisticsController.maxJson
 GET            /statistics/clicked                     @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesHtml
 #GET            /statistics/clicked/json                @recommendationsystem.controllers.manager.StatisticsController.clickedAdvicesJson
-#GET            /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.getCalculateStatisticsOnRangeForm
-#POST           /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.calculateGoodAdvicesHtml
+GET            /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.getCalculateStatisticsOnRangeForm
+POST           /statistics/good                        @recommendationsystem.controllers.manager.StatisticsController.calculateGoodAdvicesHtml
 #POST           /statistics/good/json                   @recommendationsystem.controllers.manager.StatisticsController.calculateGoodAdvicesJson
 #POST           /statistics/tags/requests/json          @recommendationsystem.controllers.manager.StatisticsController.searchTopRequestedTagsJson
-#GET            /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.showRequestForm
-#POST           /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.searchTopRequestTagsValidateForm
-#GET            /statistics/tags/requests/:s/:f         @recommendationsystem.controllers.manager.StatisticsController.displayTopRequestResult(s: Long, f: Long)
-#GET            /statistics/:average/:count             @recommendationsystem.controllers.manager.StatisticsController.displayStatistics(average: Double, count: Int)
+GET            /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.showRequestForm
+POST           /statistics/tags/requests               @recommendationsystem.controllers.manager.StatisticsController.searchTopRequestTagsValidateForm
+GET            /statistics/tags/requests/:s/:f         @recommendationsystem.controllers.manager.StatisticsController.displayTopRequestResult(s: Long, f: Long)
+GET            /statistics/:average/:count             @recommendationsystem.controllers.manager.StatisticsController.displayStatistics(average: Double, count: Int)
 #POST           /statistics/tags/advices/json           @recommendationsystem.controllers.manager.StatisticsController.topAdvicesJson
-#GET            /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesForm
-#POST           /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesValidateForm
-#GET            /statistics/tags/advices/:s/:f          @recommendationsystem.controllers.manager.StatisticsController.displayTopAdvicesResults(s: Long, f: Long)
+GET            /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesForm
+POST           /statistics/tags/advices                @recommendationsystem.controllers.manager.StatisticsController.showTopAdvicesValidateForm
+GET            /statistics/tags/advices/:s/:f          @recommendationsystem.controllers.manager.StatisticsController.displayTopAdvicesResults(s: Long, f: Long)
 #GET            /statistics/tag                         @recommendationsystem.controllers.manager.StatisticsController.userTag
 
 

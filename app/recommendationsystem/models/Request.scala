@@ -38,5 +38,5 @@ object Requests extends RequestsDao {
 
   override def save(e: Request, upsert: Boolean): Future[Boolean] = RequestsOdb.save(e,upsert)
 
-  override def find(query: String): Future[List[Request]] = Requests.find(query)
+  override def find(query: String): Future[List[Request]] = RequestsOdb.find(query)
 }
