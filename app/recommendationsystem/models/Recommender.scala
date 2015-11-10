@@ -226,9 +226,9 @@ class TagActor extends Actor with akka.actor.ActorLogging {
       }
       val keepSender = sender
       //TODO
-      /*equalsTag.run(tagIteratee).onComplete {
+      equalsTag.run(tagIteratee).onComplete {
         case Success(list) => keepSender ! Completed(id, list)
         case Failure(e) => keepSender ! Failed(id)
-      }*/
+      }
   }
 }

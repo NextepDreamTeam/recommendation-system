@@ -148,13 +148,10 @@ object Application extends Controller {
 
     def findUsers(input: FindSuggestion): Future[Option[List[User]]] = {
       val category = input.category 
-      val product = input.product 
-      val regexString = Json.obj("$regex" ->  JsString(category + ":.*")) //the regex condition
-      val existsCategory = Json.obj("tags.tag" -> regexString) //exists category condition
-      val notExistsProduct = Json.obj("tags.tag" -> Json.obj("$ne" -> product )) //the not exists already product condition
-      val conditions = Seq(existsCategory, notExistsProduct)
-      val query = ""//Json.obj("$and" -> conditions) //the and for the two conditions
-      //TODO cambiare la query da JSON a una query SQL
+      val product = input.product
+      val query = "select from Users " +
+        "where outE(\"HoldsTag\").inV(\"Tag\") in " +
+               "(select from Tags where tag like \"" + category + ":%\" and tag <> \"" + product + "\" )"
       Users.find(query).flatMap(users =>
         if(users.nonEmpty)
           Future{Some(users)}

@@ -27,7 +27,6 @@ object TagSum {
     (__ \ "value" \ "sum").format[Double] ~
     (__ \ "value" \ "sumQ").format[Double])(TagSum.apply, unlift(TagSum.unapply))*/
 }
-//probabilmente veniva utilizzato per salvare nel db delle info dell'algoritmo
 object TagsSums extends TagsSumsDao {
   //val collectionName = "tagsSums"//"recommendation.tagsSums"
   //implicit val storageFormat = TagSum.TagSumFormat
@@ -100,7 +99,7 @@ object Similarity extends TagsSimilarityDao {
   override def find(query: String): Future[List[Similarity]] = TagsSimilarityOdb.find(query)
 }
 
-/*
+
 object Pearson {
   val map1 = """
       function() {
@@ -232,8 +231,6 @@ object Pearson {
    * @return a future json result
    */
   def mapReduce(inCollection: String, mapFunction: String, reduceFunction: String, outCollection: String): Future[JsValue] = {
-    //import reactivemongo.core.commands._
-    //import reactivemongo.bson._
 
     val output = Promise[JsValue]()
     val mapReduceCommand = BSONDocument(
@@ -275,16 +272,16 @@ object Pearson {
    */
   protected def startPearson: Future[String] = {
     /** Obtain my Enumerator with all users */
-    val tagsMatch /*: Enumerator[TagsMatch]*/ = TagsCompared.all.toEnum
+    val tagsMatch /*: Enumerator[TagsMatch]*/ = TagsCompared.all//.toEnum
 
     /** create an Iteratee for processing each chunk */
-    val tagsSumIteratee = Iteratee.foreach[TagsMatch] { tagsMatch =>
+    val tagsSumIteratee = Iteratee.foreach[TagsMatch] { tagsMatch: TagsMatch =>
       val t1 = TagSum(tagsMatch.tag1, tagsMatch.sum1, tagsMatch.sumQ1) //TagsSums.find(Json.obj("_id" -> recommendation.tagsMatch.tag1)).one
       val t2 = TagSum(tagsMatch.tag2, tagsMatch.sum2, tagsMatch.sumQ2) //TagsSums.find(Json.obj("_id" -> recommendation.tagsMatch.tag2)).one
 
       val num = (tagsMatch.sumProd * tagsMatch.count) - (t1.sum * t2.sum)
-      val den1 = ((tagsMatch.count * t1.sumQ) - Math.pow(t1.sum, 2))
-      val den2 = ((tagsMatch.count * t2.sumQ) - Math.pow(t2.sum, 2))
+      val den1 = (tagsMatch.count * t1.sumQ) - Math.pow(t1.sum, 2)
+      val den2 = (tagsMatch.count * t2.sumQ) - Math.pow(t2.sum, 2)
       val den = Math.sqrt(den1) * Math.sqrt(den2)
 
       play.Logger.debug(
@@ -297,18 +294,18 @@ object Pearson {
             den2 = (${tagsMatch.count.toString} * ${t2.sumQ.toString}) - ${t2.sum.toString}^2
             den = sqrt(${den1.toString}) * sqrt(${den2.toString})""")
 
-      val t1Id = Tag(tagsMatch.tag1, None).id
+      val t1Id = Tag(tagsMatch.tag1, None).id //Controllare se sono utili gli id
       val t2Id = Tag(tagsMatch.tag2, None).id
-      val json = Similarity(
-        id = (t1Id + "-" + t2Id) /*tagsMatch._id*/ ,
-        tag1 = t1Id /*tagsMatch.tag1*/ ,
+      val sim = Similarity(
+        //id = (t1Id + "-" + t2Id) /*tagsMatch._id*/ ,
+        //tag1 = t1Id /*tagsMatch.tag1*/ ,
         tag1Name = tagsMatch.tag1,
-        tag2 = t2Id /*tagsMatch.tag2*/ ,
+        //tag2 = t2Id /*tagsMatch.tag2*/ ,
         tag2Name = tagsMatch.tag2,
         eq = if (den == 0) 0 else num / den)
-      Similarity.update(Json.obj("id" -> (t1Id + "-" + t2Id)), json, upsert = true)
+      Similarity.save(sim, true)
     }
-
+    //BOOKMARK
     /** create a promise to serve */
     val pResult = Promise[String]
     /** Start elaborate */
@@ -378,4 +375,3 @@ object Pearson {
 }
   
 }
-*/

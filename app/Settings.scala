@@ -1,4 +1,4 @@
-/*import play.api._
+import play.api._
 import play.api.mvc._
 import play.api.mvc.Results._
 import play.api.http.Status
@@ -10,7 +10,7 @@ import scala.concurrent.Future
 import java.lang.reflect.Constructor
 import recommendationsystem.models.Error
 
-import recommendationsystem.algorithms.Pearson
+//import recommendationsystem.algorithms.Pearson
 
 import recommendationsystem.formatters.json.ErrorFormatters.generalFormatter
 
@@ -23,7 +23,7 @@ object Settings {
     val nowH = ("%1$tH".format(System.currentTimeMillis)).toInt
     val howMuchToRuns = (24 - nowH + 3)
 
-    Akka.system.scheduler.schedule(0 hours, 24 hours)(Pearson.calculate)
+    //Akka.system.scheduler.schedule(0 hours, 24 hours)(Pearson.calculate)
   }
 
   /**
@@ -62,16 +62,4 @@ object Settings {
     ))
   }
 
-  /**
-   * An implementation that checks if the controller expects a RuntimeEnvironment and
-   * passes the instance to it if required.
-   *
-   * This can be replaced by any DI framework to inject it differently.
-   *
-   * @param controllerClass
-   * @tparam A
-   * @return
-   */
-
 }
-*/

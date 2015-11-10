@@ -18,7 +18,7 @@ case class Tag(
   lazy val flatten = category + ":" + attr
 
   override def equals(that: Any): Boolean = that match {
-    case t: Tag => (category == t.category && attr == t.attr)
+    case t: Tag => category == t.category && attr == t.attr
     case _ => false
   }
 }
@@ -27,7 +27,7 @@ object Tag {
   def apply(tag: String, eqTo: Option[List[(Tag, Double)]]) = {
     val splitted = tag.split(":+").toList
     splitted match {
-      case x :: y :: Nil => new Tag(splitted(0), splitted(1), eqTo)
+      case x :: y :: Nil => new Tag(x, y, eqTo)
       case _ => throw new Exception("Tag.apply() - No valid tag")
     }
     //new Tag(splitted(0), splitted(1), eqTo)
